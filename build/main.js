@@ -125,10 +125,11 @@ class Sunseeker extends utils.Adapter {
     this.log.info(`Start login`);
     const session = await this.login();
     if (session) {
-      await this.getDeviceList();
-      await this.getDeviceUpdate();
       this.setRefreshToken();
       this.subscribeStates("*");
+      if (this.session && this.session.user_id) {
+        this.mqtt.start(this.session.user_id);
+      }
     }
   }
   setRefreshToken() {
@@ -244,6 +245,7 @@ class Sunseeker extends utils.Adapter {
   onUnload(callback) {
     try {
       this.refreshTokenInterval && this.clearInterval(this.refreshTokenInterval);
+      this.mqtt.destroy();
       callback();
     } catch (error) {
       this.log.error(`Error during unloading: ${error.message}`);

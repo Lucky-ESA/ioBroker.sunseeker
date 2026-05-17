@@ -1,4 +1,4 @@
 export interface MQTT {
-    start(): void;
+    start(user_id: number): void;
     destroy(): void;
 }
