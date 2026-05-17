@@ -125,10 +125,12 @@ class Sunseeker extends utils.Adapter {
     this.log.info(`Start login`);
     const session = await this.login();
     if (session) {
+      await this.setState("info.connection", true, true);
+      await this.getDeviceList();
+      await this.getDeviceUpdate();
       this.setRefreshToken();
       this.subscribeStates("*");
       if (this.session && this.session.user_id) {
-        this.mqtt.start(this.session.user_id);
       }
     }
   }
@@ -180,10 +182,12 @@ class Sunseeker extends utils.Adapter {
     const url = `${this.url}/admin/new-oauth/oauth2-new/token?refresh_token=${(_a = this.session) == null ? void 0 : _a.refresh_token}`;
     const resp = await this.req.post(url, headers, null);
     if (resp && resp.data && resp.data.data) {
+      await this.setState("info.connection", true, true);
       this.session = resp.data;
       this.lHeader.Authorization = `bearer ${resp.data.access_token}`;
       await this.setSessionValue();
       this.setRefreshToken();
+      return;
     } else if (resp && resp && resp.code) {
       this.log.error(`RefreshToken Invalid: ${JSON.stringify(resp)}`);
     } else if (typeof resp === "object") {
@@ -191,6 +195,7 @@ class Sunseeker extends utils.Adapter {
     } else {
       this.log.error(`RefreshToken Error: ${resp}`);
     }
+    await this.setState("info.connection", false, true);
   }
   async getDeviceList() {
     const headers = {
@@ -199,6 +204,7 @@ class Sunseeker extends utils.Adapter {
     const url = `${this.url}/app_wireless_mower/device-user/getCustomDevice?all=true`;
     const resp = await this.req.get(url, headers, null);
     if (resp && resp.data && resp.data.data) {
+      this.log.debug(`getDeviceList: ${JSON.stringify(resp.data)}`);
       for (const device of resp.data.data) {
         if (!this.devices.get(device.deviceId)) {
           this.log.info(`Create mower raw for device ${device.deviceId}`);
@@ -225,6 +231,7 @@ class Sunseeker extends utils.Adapter {
       const url = `${this.url}/app_wireless_mower/device/info/${id}`;
       const resp = await this.req.get(url, headers, null);
       if (resp && resp.data && resp.data.data) {
+        this.log.debug(`getDeviceUpdate: ${JSON.stringify(resp.data)}`);
         this.log.info(`Create mower raw info for device ${id}`);
         await this.json2iob.parse(`${id}.mower_raw_info`, resp.data.data, { forceIndex: true });
       } else if (resp && resp && resp.code) {
