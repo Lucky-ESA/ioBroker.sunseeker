@@ -127,7 +127,7 @@ class Sunseeker extends utils.Adapter {
     if (session) {
       await this.setState("info.connection", true, true);
       await this.getDeviceList();
-      await this.getDeviceUpdate();
+      await this.getUpdateDevices();
       this.setRefreshToken();
       this.subscribeStates("*");
       if (this.session && this.session.user_id) {
@@ -209,7 +209,7 @@ class Sunseeker extends utils.Adapter {
         if (!this.devices.get(device.deviceId)) {
           this.log.info(`Create mower raw for device ${device.deviceId}`);
           this.devices.set(device.deviceId, device);
-          await this.objects.createRaw(device.deviceId);
+          await this.objects.createRaw(device.deviceId, device.deviceName);
         }
         await this.json2iob.parse(`${device.deviceId}.mower_raw`, device, { forceIndex: true });
       }
@@ -217,11 +217,86 @@ class Sunseeker extends utils.Adapter {
     } else if (resp && resp && resp.code) {
       this.log.error(`DeviceList Invalid: ${JSON.stringify(resp)}`);
     } else if (typeof resp === "object") {
-      this.log.error(`DeviceList Error Data: ${JSON.stringify(resp)}`);
+      if (resp.data) {
+        this.log.error(`DeviceList Error Data: ${JSON.stringify(resp.data)}`);
+      } else {
+        this.log.error(`DeviceList Error Data: ${JSON.stringify(resp)}`);
+      }
     } else {
       this.log.error(`DeviceList Error: ${resp}`);
     }
     return false;
+  }
+  async getUpdateDevices() {
+    var _a, _b, _c, _d;
+    for (const id of this.devices.keys()) {
+      await this.getDeviceData(
+        `${this.url}/wireless_map/wireless_device/get?deviceSn=${(_a = this.devices.get(id)) == null ? void 0 : _a.deviceSn}`,
+        id,
+        "getDeviceMap",
+        "mower_map_info",
+        "mower map info"
+      );
+      await this.getDeviceData(
+        `${this.url}/wireless_map/wireless_device/getHeatMap?deviceSn=${(_b = this.devices.get(id)) == null ? void 0 : _b.deviceSn}`,
+        id,
+        "getDeviceHeadMap",
+        "mower_head_map_info",
+        "mower head map info"
+      );
+      await this.getDeviceData(
+        `${this.url}/wireless_map/backup_map/get?sn=${(_c = this.devices.get(id)) == null ? void 0 : _c.deviceSn}`,
+        id,
+        "getDeviceBackupMap",
+        "mower_backup_map_info",
+        "mower backup map info"
+      );
+      await this.getDeviceData(
+        `${this.url}/app_wirelessv1_mower/wirelessv1/device-schedule/${id}`,
+        id,
+        "getDeviceSchedule",
+        "mower_schedule",
+        "mower schedule"
+      );
+      await this.getDeviceData(
+        `${this.url}/app_wireless_mower/device/info/${id}`,
+        id,
+        "getDeviceUpdate",
+        "mower_raw_info",
+        "update"
+      );
+      await this.getDeviceData(
+        `${this.url}/app_wireless_mower/work_record/page?sn=${(_d = this.devices.get(id)) == null ? void 0 : _d.deviceSn}&current=1&size=10`,
+        id,
+        "getDeviceWorkRecord",
+        "mower_work_record",
+        "work record"
+      );
+    }
+    return true;
+  }
+  async getDeviceData(url, id, log, path, create) {
+    const headers = {
+      headers: this.rHeader
+    };
+    this.log.debug(`URL: ${url}`);
+    const resp = await this.req.get(url, headers, null);
+    if (resp && resp.data && resp.data.data) {
+      this.log.debug(`${log}: ${JSON.stringify(resp.data)}`);
+      this.log.info(`Create ${create} for device ${id}`);
+      await this.json2iob.parse(`${id}.${path}`, resp.data.data, { forceIndex: true });
+    } else if (resp && resp && resp.code) {
+      this.log.error(`${log} Invalid: ${JSON.stringify(resp)}`);
+    } else if (typeof resp === "object") {
+      if (resp.data) {
+        this.log.error(`${log} Error Data: ${JSON.stringify(resp.data)}`);
+      } else {
+        this.log.error(`${log} Error Data: ${JSON.stringify(resp)}`);
+      }
+    } else {
+      this.log.error(`${log} Error: ${resp}`);
+    }
+    return true;
   }
   async getDeviceUpdate() {
     const headers = {
@@ -232,7 +307,7 @@ class Sunseeker extends utils.Adapter {
       const resp = await this.req.get(url, headers, null);
       if (resp && resp.data && resp.data.data) {
         this.log.debug(`getDeviceUpdate: ${JSON.stringify(resp.data)}`);
-        this.log.info(`Create mower raw info for device ${id}`);
+        this.log.info(`Create update for device ${id}`);
         await this.json2iob.parse(`${id}.mower_raw_info`, resp.data.data, { forceIndex: true });
       } else if (resp && resp && resp.code) {
         this.log.error(`DeviceData Invalid: ${JSON.stringify(resp)}`);
@@ -288,6 +363,9 @@ class Sunseeker extends utils.Adapter {
           void this.setState(id, { ack: true });
         } else if (command === "update_raw") {
           void this.getDeviceList();
+          void this.setState(id, { ack: true });
+        } else if (command === "update_all") {
+          void this.getUpdateDevices();
           void this.setState(id, { ack: true });
         }
       }

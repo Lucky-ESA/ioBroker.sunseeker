@@ -22,6 +22,10 @@ __export(helper_exports, {
   CMDURL_X: () => CMDURL_X,
   EU_HOST: () => EU_HOST,
   EU_URI: () => EU_URI,
+  MQTT_EU_NEW: () => MQTT_EU_NEW,
+  MQTT_EU_OLD: () => MQTT_EU_OLD,
+  MQTT_US_NEW: () => MQTT_US_NEW,
+  MQTT_US_OLD: () => MQTT_US_OLD,
   OLD_HOST: () => OLD_HOST,
   OLD_URL: () => OLD_URL,
   US_HOST: () => US_HOST,
@@ -36,12 +40,20 @@ const OLD_URL = "https://server.sk-robot.com/api";
 const OLD_HOST = "server.sk-robot.com";
 const CMDURL_X = "/iot_mower/wireless/device/";
 const CMDURL_V = "/app_wirelessv1_mower/wirelessv1/device/";
+const MQTT_EU_OLD = "app.mqttv1-eu.sk-robot.com";
+const MQTT_EU_NEW = "wfsmqtt-specific.sk-robot.com";
+const MQTT_US_OLD = "app.mqttv1-us.sk-robot.com";
+const MQTT_US_NEW = "wfsmqtt-specific-us.sk-robot.com";
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   CMDURL_V,
   CMDURL_X,
   EU_HOST,
   EU_URI,
+  MQTT_EU_NEW,
+  MQTT_EU_OLD,
+  MQTT_US_NEW,
+  MQTT_US_OLD,
   OLD_HOST,
   OLD_URL,
   US_HOST,

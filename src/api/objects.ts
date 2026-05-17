@@ -10,8 +10,14 @@ export class creatObjects implements Objects {
     constructor(private readonly iob: ioBroker.Adapter) {
         this.adapter = this.iob;
     }
-    public async createRaw(id: string): Promise<any> {
+    public async createRaw(id: string, name: string): Promise<any> {
         let common: CommonStates;
+        common = {
+            name: name,
+            desc: "Create by Adapter",
+            icon: "img/mower.png",
+        };
+        await this.createDataPoint(`${this.adapter.namespace}.${id}`, common, "device", null, null, null);
         common = {
             name: {
                 en: "Mower",
@@ -30,6 +36,106 @@ export class creatObjects implements Objects {
             icon: "img/mower.png",
         };
         await this.createDataPoint(`${this.adapter.namespace}.${id}.mower`, common, "channel", null, null, null);
+        common = {
+            name: {
+                en: "Mower map info",
+                de: "Informationen zur Mäherkarte",
+                ru: "Информация о карте газонокосилки",
+                pt: "Informações do mapa do cortador de grama",
+                nl: "Informatie over de maaierkaart",
+                fr: "Informations sur la carte de la tondeuse",
+                it: "Informazioni sulla mappa del tosaerba",
+                es: "Información del mapa de cortacéspedes",
+                pl: "Informacje o mapie kosiarki",
+                uk: "Інформація про карту косарок",
+                "zh-cn": "割草机地图信息",
+            },
+            desc: "Create by Adapter",
+            icon: "img/map.png",
+        };
+        await this.createDataPoint(
+            `${this.adapter.namespace}.${id}.mower_map_info`,
+            common,
+            "channel",
+            null,
+            null,
+            null,
+        );
+        common = {
+            name: {
+                en: "Mower head map info",
+                de: "Informationen zur Mähkopfkarte",
+                ru: "Информация о карте расположения режущих головок косилки",
+                pt: "Informações do mapa da cabeça de corte",
+                nl: "Informatie over de maaikopkaart",
+                fr: "Informations sur la carte de la tête de coupe",
+                it: "Informazioni sulla mappa della testina di taglio",
+                es: "Información del mapa del cabezal de corte",
+                pl: "Informacje o mapie głowicy kosiarki",
+                uk: "Інформація про карту головки косарки",
+                "zh-cn": "割草机头地图信息",
+            },
+            desc: "Create by Adapter",
+            icon: "img/map.png",
+        };
+        await this.createDataPoint(
+            `${this.adapter.namespace}.${id}.mower_head_map_info`,
+            common,
+            "channel",
+            null,
+            null,
+            null,
+        );
+        common = {
+            name: {
+                en: "Mower map backup",
+                de: "Mäherkartensicherung",
+                ru: "резервная копия карты газонокосилки",
+                pt: "Backup do mapa do cortador de grama",
+                nl: "Back-up van de maaikaart",
+                fr: "Sauvegarde de la carte de la tondeuse",
+                it: "backup della mappa del tosaerba",
+                es: "Copia de seguridad del mapa de la cortadora de césped",
+                pl: "Kopia zapasowa mapy kosiarki",
+                uk: "Резервне копіювання карти косарки",
+                "zh-cn": "割草机地图备份",
+            },
+            desc: "Create by Adapter",
+            icon: "img/map.png",
+        };
+        await this.createDataPoint(
+            `${this.adapter.namespace}.${id}.mower_backup_map_info`,
+            common,
+            "channel",
+            null,
+            null,
+            null,
+        );
+        common = {
+            name: {
+                en: "Device work record",
+                de: "Geräte-Arbeitsprotokoll",
+                ru: "Запись о работе устройства",
+                pt: "Registro de funcionamento do dispositivo",
+                nl: "Apparaat werkregistratie",
+                fr: "Enregistrement du fonctionnement de l'appareil",
+                it: "registro delle attività del dispositivo",
+                es: "Registro de funcionamiento del dispositivo",
+                pl: "Rejestr pracy urządzenia",
+                uk: "Журнал роботи пристрою",
+                "zh-cn": "设备工作记录",
+            },
+            desc: "Create by Adapter",
+            icon: "img/work.png",
+        };
+        await this.createDataPoint(
+            `${this.adapter.namespace}.${id}.mower_work_record`,
+            common,
+            "channel",
+            null,
+            null,
+            null,
+        );
         common = {
             type: "boolean",
             role: "button",
@@ -51,6 +157,34 @@ export class creatObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(`${this.adapter.namespace}.${id}.mower.update`, common, "state", null, null, null);
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "Mower update all data",
+                de: "Mäher aktualisiert alle Daten",
+                ru: "Обновление данных газонокосилки",
+                pt: "Atualização de todos os dados do cortador de grama",
+                nl: "Alle gegevens van de grasmaaier bijwerken",
+                fr: "Mise à jour de toutes les données de la tondeuse",
+                it: "Aggiornamento del tosaerba: tutti i dati",
+                es: "Actualizar todos los datos de la cortadora de césped",
+                pl: "Kosiarka aktualizuje wszystkie dane",
+                uk: "Оновлення всіх даних косарки",
+                "zh-cn": "割草机更新所有数据",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(
+            `${this.adapter.namespace}.${id}.mower.update_all`,
+            common,
+            "state",
+            null,
+            null,
+            null,
+        );
         common = {
             type: "boolean",
             role: "button",

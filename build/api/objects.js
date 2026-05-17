@@ -32,8 +32,14 @@ class creatObjects {
     this.adapter = this.iob;
   }
   adapter;
-  async createRaw(id) {
+  async createRaw(id, name) {
     let common;
+    common = {
+      name,
+      desc: "Create by Adapter",
+      icon: "img/mower.png"
+    };
+    await this.createDataPoint(`${this.adapter.namespace}.${id}`, common, "device", null, null, null);
     common = {
       name: {
         en: "Mower",
@@ -52,6 +58,106 @@ class creatObjects {
       icon: "img/mower.png"
     };
     await this.createDataPoint(`${this.adapter.namespace}.${id}.mower`, common, "channel", null, null, null);
+    common = {
+      name: {
+        en: "Mower map info",
+        de: "Informationen zur M\xE4herkarte",
+        ru: "\u0418\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u044F \u043E \u043A\u0430\u0440\u0442\u0435 \u0433\u0430\u0437\u043E\u043D\u043E\u043A\u043E\u0441\u0438\u043B\u043A\u0438",
+        pt: "Informa\xE7\xF5es do mapa do cortador de grama",
+        nl: "Informatie over de maaierkaart",
+        fr: "Informations sur la carte de la tondeuse",
+        it: "Informazioni sulla mappa del tosaerba",
+        es: "Informaci\xF3n del mapa de cortac\xE9spedes",
+        pl: "Informacje o mapie kosiarki",
+        uk: "\u0406\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0456\u044F \u043F\u0440\u043E \u043A\u0430\u0440\u0442\u0443 \u043A\u043E\u0441\u0430\u0440\u043E\u043A",
+        "zh-cn": "\u5272\u8349\u673A\u5730\u56FE\u4FE1\u606F"
+      },
+      desc: "Create by Adapter",
+      icon: "img/map.png"
+    };
+    await this.createDataPoint(
+      `${this.adapter.namespace}.${id}.mower_map_info`,
+      common,
+      "channel",
+      null,
+      null,
+      null
+    );
+    common = {
+      name: {
+        en: "Mower head map info",
+        de: "Informationen zur M\xE4hkopfkarte",
+        ru: "\u0418\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u044F \u043E \u043A\u0430\u0440\u0442\u0435 \u0440\u0430\u0441\u043F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u044F \u0440\u0435\u0436\u0443\u0449\u0438\u0445 \u0433\u043E\u043B\u043E\u0432\u043E\u043A \u043A\u043E\u0441\u0438\u043B\u043A\u0438",
+        pt: "Informa\xE7\xF5es do mapa da cabe\xE7a de corte",
+        nl: "Informatie over de maaikopkaart",
+        fr: "Informations sur la carte de la t\xEAte de coupe",
+        it: "Informazioni sulla mappa della testina di taglio",
+        es: "Informaci\xF3n del mapa del cabezal de corte",
+        pl: "Informacje o mapie g\u0142owicy kosiarki",
+        uk: "\u0406\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0456\u044F \u043F\u0440\u043E \u043A\u0430\u0440\u0442\u0443 \u0433\u043E\u043B\u043E\u0432\u043A\u0438 \u043A\u043E\u0441\u0430\u0440\u043A\u0438",
+        "zh-cn": "\u5272\u8349\u673A\u5934\u5730\u56FE\u4FE1\u606F"
+      },
+      desc: "Create by Adapter",
+      icon: "img/map.png"
+    };
+    await this.createDataPoint(
+      `${this.adapter.namespace}.${id}.mower_head_map_info`,
+      common,
+      "channel",
+      null,
+      null,
+      null
+    );
+    common = {
+      name: {
+        en: "Mower map backup",
+        de: "M\xE4herkartensicherung",
+        ru: "\u0440\u0435\u0437\u0435\u0440\u0432\u043D\u0430\u044F \u043A\u043E\u043F\u0438\u044F \u043A\u0430\u0440\u0442\u044B \u0433\u0430\u0437\u043E\u043D\u043E\u043A\u043E\u0441\u0438\u043B\u043A\u0438",
+        pt: "Backup do mapa do cortador de grama",
+        nl: "Back-up van de maaikaart",
+        fr: "Sauvegarde de la carte de la tondeuse",
+        it: "backup della mappa del tosaerba",
+        es: "Copia de seguridad del mapa de la cortadora de c\xE9sped",
+        pl: "Kopia zapasowa mapy kosiarki",
+        uk: "\u0420\u0435\u0437\u0435\u0440\u0432\u043D\u0435 \u043A\u043E\u043F\u0456\u044E\u0432\u0430\u043D\u043D\u044F \u043A\u0430\u0440\u0442\u0438 \u043A\u043E\u0441\u0430\u0440\u043A\u0438",
+        "zh-cn": "\u5272\u8349\u673A\u5730\u56FE\u5907\u4EFD"
+      },
+      desc: "Create by Adapter",
+      icon: "img/map.png"
+    };
+    await this.createDataPoint(
+      `${this.adapter.namespace}.${id}.mower_backup_map_info`,
+      common,
+      "channel",
+      null,
+      null,
+      null
+    );
+    common = {
+      name: {
+        en: "Device work record",
+        de: "Ger\xE4te-Arbeitsprotokoll",
+        ru: "\u0417\u0430\u043F\u0438\u0441\u044C \u043E \u0440\u0430\u0431\u043E\u0442\u0435 \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0430",
+        pt: "Registro de funcionamento do dispositivo",
+        nl: "Apparaat werkregistratie",
+        fr: "Enregistrement du fonctionnement de l'appareil",
+        it: "registro delle attivit\xE0 del dispositivo",
+        es: "Registro de funcionamiento del dispositivo",
+        pl: "Rejestr pracy urz\u0105dzenia",
+        uk: "\u0416\u0443\u0440\u043D\u0430\u043B \u0440\u043E\u0431\u043E\u0442\u0438 \u043F\u0440\u0438\u0441\u0442\u0440\u043E\u044E",
+        "zh-cn": "\u8BBE\u5907\u5DE5\u4F5C\u8BB0\u5F55"
+      },
+      desc: "Create by Adapter",
+      icon: "img/work.png"
+    };
+    await this.createDataPoint(
+      `${this.adapter.namespace}.${id}.mower_work_record`,
+      common,
+      "channel",
+      null,
+      null,
+      null
+    );
     common = {
       type: "boolean",
       role: "button",
@@ -73,6 +179,34 @@ class creatObjects {
       write: true
     };
     await this.createDataPoint(`${this.adapter.namespace}.${id}.mower.update`, common, "state", null, null, null);
+    common = {
+      type: "boolean",
+      role: "button",
+      name: {
+        en: "Mower update all data",
+        de: "M\xE4her aktualisiert alle Daten",
+        ru: "\u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u0434\u0430\u043D\u043D\u044B\u0445 \u0433\u0430\u0437\u043E\u043D\u043E\u043A\u043E\u0441\u0438\u043B\u043A\u0438",
+        pt: "Atualiza\xE7\xE3o de todos os dados do cortador de grama",
+        nl: "Alle gegevens van de grasmaaier bijwerken",
+        fr: "Mise \xE0 jour de toutes les donn\xE9es de la tondeuse",
+        it: "Aggiornamento del tosaerba: tutti i dati",
+        es: "Actualizar todos los datos de la cortadora de c\xE9sped",
+        pl: "Kosiarka aktualizuje wszystkie dane",
+        uk: "\u041E\u043D\u043E\u0432\u043B\u0435\u043D\u043D\u044F \u0432\u0441\u0456\u0445 \u0434\u0430\u043D\u0438\u0445 \u043A\u043E\u0441\u0430\u0440\u043A\u0438",
+        "zh-cn": "\u5272\u8349\u673A\u66F4\u65B0\u6240\u6709\u6570\u636E"
+      },
+      desc: "Create by Adapter",
+      read: false,
+      write: true
+    };
+    await this.createDataPoint(
+      `${this.adapter.namespace}.${id}.mower.update_all`,
+      common,
+      "state",
+      null,
+      null,
+      null
+    );
     common = {
       type: "boolean",
       role: "button",

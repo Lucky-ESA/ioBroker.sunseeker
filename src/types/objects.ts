@@ -1,6 +1,6 @@
 export interface Objects {
     createAuth(): Promise<any>;
-    createRaw(id: string): Promise<any>;
+    createRaw(id: string, name: string): Promise<any>;
 }
 
 export type CommonStates = {
