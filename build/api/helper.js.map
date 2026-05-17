@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/api/helper.ts"],
+  "sourcesContent": ["const US_URI = \"https://wirefree-specific-us.sk-robot.com/api\";\nconst US_HOST = \"wirefree-specific-us.sk-robot.com\";\nconst EU_URI = \"https://wirefree-specific.sk-robot.com/api\";\nconst EU_HOST = \"wirefree-specific.sk-robot.com\";\nconst OLD_URL = \"https://server.sk-robot.com/api\";\nconst OLD_HOST = \"server.sk-robot.com\";\nconst CMDURL_X = \"/iot_mower/wireless/device/\";\nconst CMDURL_V = \"/app_wirelessv1_mower/wirelessv1/device/\";\nexport { CMDURL_V, CMDURL_X, EU_HOST, EU_URI, OLD_HOST, OLD_URL, US_HOST, US_URI };\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,MAAM,SAAS;AACf,MAAM,UAAU;AAChB,MAAM,SAAS;AACf,MAAM,UAAU;AAChB,MAAM,UAAU;AAChB,MAAM,WAAW;AACjB,MAAM,WAAW;AACjB,MAAM,WAAW;",
+  "names": []
+}

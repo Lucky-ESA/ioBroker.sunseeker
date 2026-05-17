@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/api/mqtt.ts"],
+  "sourcesContent": ["import { EventEmitter } from \"node:events\";\nimport type { MQTT } from \"../types/mqtt\";\n\nexport class mqttConnection extends EventEmitter implements MQTT {\n    private testTimeout: ioBroker.Timeout | undefined;\n    private readonly iob: ioBroker.Adapter;\n    /**\n     * MQTT Connection\n     *\n     * @param iob ioBroker.Adapter\n     */\n    constructor(iob: ioBroker.Adapter) {\n        super();\n        this.iob = iob;\n    }\n\n    public start(): void {\n        this.iob.log.info(\"Work\");\n    }\n\n    /**\n     * Destroy all events\n     */\n    public destroy(): void {\n        this.iob.log.info(\"Work\");\n    }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,yBAA6B;AAGtB,MAAM,uBAAuB,gCAA6B;AAAA,EACrD;AAAA,EACS;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,EAMjB,YAAY,KAAuB;AAC/B,UAAM;AACN,SAAK,MAAM;AAAA,EACf;AAAA,EAEO,QAAc;AACjB,SAAK,IAAI,IAAI,KAAK,MAAM;AAAA,EAC5B;AAAA;AAAA;AAAA;AAAA,EAKO,UAAgB;AACnB,SAAK,IAAI,IAAI,KAAK,MAAM;AAAA,EAC5B;AACJ;",
+  "names": []
+}

@@ -1,0 +1,46 @@
+{
+    "i18n": true,
+    "type": "panel",
+    "items": {
+        "username": {
+            "type": "text",
+            "label": "Username",
+            "newLine": true,
+            "xs": 12,
+            "sm": 12,
+            "md": 6,
+            "lg": 4,
+            "xl": 4
+        },
+        "password": {
+            "type": "password",
+            "label": "Password",
+            "newLine": true,
+            "xs": 12,
+            "sm": 12,
+            "md": 6,
+            "lg": 4,
+            "xl": 4
+        },
+        "region": {
+            "type": "select",
+            "label": "Region",
+            "newLine": true,
+            "xs": 12,
+            "sm": 12,
+            "md": 6,
+            "lg": 4,
+            "xl": 4,
+            "options": [
+                {
+                    "label": "EU",
+                    "value": "EU"
+                },
+                {
+                    "label": "US",
+                    "value": "US"
+                }
+            ]
+        }
+    }
+}
