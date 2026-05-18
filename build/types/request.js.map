@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../src/types/request.ts"],
-  "sourcesContent": ["export interface AxiosRrequest {\n    /**\n     * @param url Icon URL\n     * @param header Icon URL\n     * @param options Options\n     * @returns axios response\n     */\n    get(url: string, header: any, options: any): Promise<AxiosResponse>;\n    /**\n     * @param url Icon URL\n     * @param header Icon URL\n     * @param options Options\n     * @returns axios response\n     */\n    post(url: string, header: any, options: any): Promise<AxiosResponse>;\n}\n\nexport interface AxiosResponse<T = any> {\n    data: T;\n    message: string;\n    status: boolean;\n}\n"],
+  "sourcesContent": ["export interface AxiosRrequest {\n    /**\n     * @param url Icon URL\n     * @param header Icon URL\n     * @param options Options\n     * @returns axios response\n     */\n    get(url: string, header: any, options: any): Promise<AxiosResponse>;\n    /**\n     * @param url Icon URL\n     * @param header Icon URL\n     * @param options Options\n     * @returns axios response\n     */\n    post(url: string, header: any, options: any): Promise<AxiosResponse>;\n    /**\n     * @param url Icon URL\n     * @param header Icon URL\n     * @param options Options\n     * @returns axios response\n     */\n    put(url: string, header: any, options: any): Promise<AxiosResponse>;\n}\n\nexport interface AxiosResponse<T = any> {\n    data: T;\n    message: string;\n    status: boolean;\n}\n"],
   "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
   "names": []
 }

@@ -10,7 +10,7 @@ export class creatObjects implements Objects {
     constructor(private readonly iob: ioBroker.Adapter) {
         this.adapter = this.iob;
     }
-    public async createRaw(id: string, name: string): Promise<any> {
+    public async createRaw(id: string, name: string, model: string): Promise<any> {
         let common: CommonStates;
         common = {
             name: name,
@@ -38,6 +38,58 @@ export class creatObjects implements Objects {
         await this.createDataPoint(`${this.adapter.namespace}.${id}.mower`, common, "channel", null, null, null);
         common = {
             name: {
+                en: "Mower all raw data",
+                de: "Mäher – alle Rohdaten",
+                ru: "Все исходные данные газонокосилки",
+                pt: "Cortador de grama, todos os dados brutos",
+                nl: "Maai alle onbewerkte gegevens",
+                fr: "Tondeuse toutes les données brutes",
+                it: "Taglia tutti i dati grezzi",
+                es: "Cortacésped todos los datos brutos",
+                pl: "Kosi wszystkie surowe dane",
+                uk: "Всі необроблені дані косарки",
+                "zh-cn": "割草机所有原始数据",
+            },
+            desc: "Create by Adapter",
+            icon: "img/raw.png",
+        };
+        await this.createDataPoint(
+            `${this.adapter.namespace}.${id}.mower_all_raw`,
+            common,
+            "channel",
+            null,
+            null,
+            null,
+        );
+        if (model == "V") {
+            common = {
+                name: {
+                    en: "Mower scheduler",
+                    de: "Mähplaner",
+                    ru: "Планировщик работы газонокосилки",
+                    pt: "Agendador de cortador de grama",
+                    nl: "Maaierplanner",
+                    fr: "programmateur de tondeuse",
+                    it: "Programmatore di taglio",
+                    es: "Programador de cortacésped",
+                    pl: "Harmonogram kosiarki",
+                    uk: "Планувальник косарок",
+                    "zh-cn": "割草机调度器",
+                },
+                desc: "Create by Adapter",
+                icon: "img/schedule.png",
+            };
+            await this.createDataPoint(
+                `${this.adapter.namespace}.${id}.mower_all_raw.mower_schedule`,
+                common,
+                "channel",
+                null,
+                null,
+                null,
+            );
+        }
+        common = {
+            name: {
                 en: "Mower map info",
                 de: "Informationen zur Mäherkarte",
                 ru: "Информация о карте газонокосилки",
@@ -54,7 +106,7 @@ export class creatObjects implements Objects {
             icon: "img/map.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_map_info`,
+            `${this.adapter.namespace}.${id}.mower_all_raw.mower_map_info`,
             common,
             "channel",
             null,
@@ -79,7 +131,7 @@ export class creatObjects implements Objects {
             icon: "img/map.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_head_map_info`,
+            `${this.adapter.namespace}.${id}.mower_all_raw.mower_head_map_info`,
             common,
             "channel",
             null,
@@ -104,7 +156,7 @@ export class creatObjects implements Objects {
             icon: "img/map.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_backup_map_info`,
+            `${this.adapter.namespace}.${id}.mower_all_raw.mower_backup_map_info`,
             common,
             "channel",
             null,
@@ -129,7 +181,7 @@ export class creatObjects implements Objects {
             icon: "img/work.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_work_record`,
+            `${this.adapter.namespace}.${id}.mower_all_raw.mower_work_record`,
             common,
             "channel",
             null,
@@ -157,6 +209,62 @@ export class creatObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(`${this.adapter.namespace}.${id}.mower.update`, common, "state", null, null, null);
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "All device properties",
+                de: "Alle Geräteeigenschaften",
+                ru: "Все свойства устройства",
+                pt: "Todas as propriedades do dispositivo",
+                nl: "Alle apparaateigenschappen",
+                fr: "Toutes les propriétés de l'appareil",
+                it: "Tutte le proprietà del dispositivo",
+                es: "Todas las propiedades del dispositivo",
+                pl: "Wszystkie właściwości urządzenia",
+                uk: "Усі властивості пристрою",
+                "zh-cn": "所有设备属性",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(
+            `${this.adapter.namespace}.${id}.mower.all_properties`,
+            common,
+            "state",
+            null,
+            null,
+            null,
+        );
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "Get Region ID",
+                de: "Regions-ID abrufen",
+                ru: "Получить идентификатор региона",
+                pt: "Obter ID da região",
+                nl: "Regio-ID ophalen",
+                fr: "Obtenir l'identifiant de région",
+                it: "Ottieni l'ID della regione",
+                es: "Obtener ID de región",
+                pl: "Uzyskaj identyfikator regionu",
+                uk: "Отримати ідентифікатор регіону",
+                "zh-cn": "获取区域 ID",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(
+            `${this.adapter.namespace}.${id}.mower.getRegionId`,
+            common,
+            "state",
+            null,
+            null,
+            null,
+        );
         common = {
             type: "boolean",
             role: "button",
@@ -230,7 +338,14 @@ export class creatObjects implements Objects {
             desc: "Create by Adapter",
             icon: "img/raw.png",
         };
-        await this.createDataPoint(`${this.adapter.namespace}.${id}.mower_raw`, common, "channel", null, null, null);
+        await this.createDataPoint(
+            `${this.adapter.namespace}.${id}.mower_all_raw.mower_raw`,
+            common,
+            "channel",
+            null,
+            null,
+            null,
+        );
         common = {
             name: {
                 en: "Mower info raw data",
@@ -249,13 +364,166 @@ export class creatObjects implements Objects {
             icon: "img/raw.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_raw_info`,
+            `${this.adapter.namespace}.${id}.mower_all_raw.mower_raw_info`,
             common,
             "channel",
             null,
             null,
             null,
         );
+    }
+    public async createMqtt(): Promise<any> {
+        let common: CommonStates;
+        common = {
+            name: {
+                en: "MQTT Connection",
+                de: "MQTT-Verbindung",
+                ru: "Подключение MQTT",
+                pt: "Conexão MQTT",
+                nl: "MQTT-verbinding",
+                fr: "Connexion MQTT",
+                it: "Connessione MQTT",
+                es: "Conexión MQTT",
+                pl: "Połączenie MQTT",
+                uk: "Підключення MQTT",
+                "zh-cn": "MQTT 连接",
+            },
+            desc: "Create by Adapter",
+            icon: "img/mqtt.png",
+        };
+        await this.createDataPoint(`${this.adapter.namespace}.mqtt`, common, "channel", null, null, null);
+        common = {
+            type: "boolean",
+            role: "switch",
+            name: {
+                en: "MQTT status for V devices",
+                de: "MQTT-Status für V-Geräte",
+                ru: "Статус MQTT для устройств V",
+                pt: "Status MQTT para dispositivos V",
+                nl: "MQTT-status voor V-apparaten",
+                fr: "État MQTT pour les appareils V",
+                it: "Stato MQTT per i dispositivi V",
+                es: "Estado MQTT para dispositivos V",
+                pl: "Status MQTT dla urządzeń V",
+                uk: "Стан MQTT для V-пристроїв",
+                "zh-cn": "V 设备的 MQTT 状态",
+            },
+            desc: "Create by Adapter",
+            read: true,
+            write: false,
+            def: false,
+        };
+        await this.createDataPoint(`${this.adapter.namespace}.mqtt.v_connection`, common, "state", false, null, null);
+        common = {
+            type: "string",
+            role: "json",
+            name: {
+                en: "MQTT access data for V devices",
+                de: "MQTT-Zugriffsdaten für V-Geräte",
+                ru: "Данные доступа MQTT для устройств V",
+                pt: "Dados de acesso MQTT para dispositivos V",
+                nl: "MQTT-toegangsgegevens voor V-apparaten",
+                fr: "Données d'accès MQTT pour les appareils V",
+                it: "Dati di accesso MQTT per dispositivi V",
+                es: "Datos de acceso MQTT para dispositivos V",
+                pl: "Dane dostępowe MQTT dla urządzeń V",
+                uk: "Дані доступу MQTT для пристроїв V",
+                "zh-cn": "V 设备的 MQTT 访问数据",
+            },
+            desc: "Create by Adapter",
+            read: true,
+            write: false,
+            def: JSON.stringify({}),
+        };
+        await this.createDataPoint(`${this.adapter.namespace}.mqtt.v_access_data`, common, "state", false, null, null);
+        common = {
+            type: "number",
+            role: "value.time",
+            name: {
+                en: "Last updated for V devices",
+                de: "Zuletzt aktualisiert für V-Geräte",
+                ru: "Последнее обновление для устройств V.",
+                pt: "Última atualização para dispositivos V",
+                nl: "Laatst bijgewerkt voor V-apparaten",
+                fr: "Dernière mise à jour pour les appareils V",
+                it: "Ultimo aggiornamento per dispositivi V",
+                es: "Última actualización para dispositivos V",
+                pl: "Ostatnia aktualizacja dla urządzeń V",
+                uk: "Останнє оновлення для пристроїв V",
+                "zh-cn": "最后更新于 V 设备",
+            },
+            desc: "Create by Adapter",
+            read: true,
+            write: false,
+            def: 0,
+        };
+        await this.createDataPoint(`${this.adapter.namespace}.mqtt.v_last_update`, common, "state", 0, null, null);
+        common = {
+            type: "boolean",
+            role: "switch",
+            name: {
+                en: "MQTT status for X devices",
+                de: "MQTT-Status für X Geräte",
+                ru: "Статус MQTT для устройств X",
+                pt: "Status MQTT para dispositivos X",
+                nl: "MQTT-status voor X-apparaten",
+                fr: "État MQTT pour les appareils X",
+                it: "Stato MQTT per i dispositivi X",
+                es: "Estado MQTT para dispositivos X",
+                pl: "Status MQTT dla urządzeń X",
+                uk: "Стан MQTT для пристроїв X",
+                "zh-cn": "X 设备的 MQTT 状态",
+            },
+            desc: "Create by Adapter",
+            read: true,
+            write: false,
+            def: false,
+        };
+        await this.createDataPoint(`${this.adapter.namespace}.mqtt.x_connection`, common, "state", false, null, null);
+        common = {
+            type: "string",
+            role: "json",
+            name: {
+                en: "MQTT access data for X devices",
+                de: "MQTT-Zugriffsdaten für X Geräte",
+                ru: "Доступ к данным MQTT для устройств X",
+                pt: "Dados de acesso MQTT para dispositivos X",
+                nl: "MQTT-toegangsgegevens voor X-apparaten",
+                fr: "Données d'accès MQTT pour les appareils X",
+                it: "Dati di accesso MQTT per dispositivi X",
+                es: "Datos de acceso MQTT para dispositivos X",
+                pl: "Dane dostępowe MQTT dla urządzeń X",
+                uk: "Дані доступу MQTT для пристроїв X",
+                "zh-cn": "X 设备的 MQTT 访问数据",
+            },
+            desc: "Create by Adapter",
+            read: true,
+            write: false,
+            def: JSON.stringify({}),
+        };
+        await this.createDataPoint(`${this.adapter.namespace}.mqtt.x_access_data`, common, "state", false, null, null);
+        common = {
+            type: "number",
+            role: "value.time",
+            name: {
+                en: "Last updated for X devices",
+                de: "Zuletzt aktualisiert für X-Geräte",
+                ru: "Последнее обновление для устройств X",
+                pt: "Última atualização para dispositivos X",
+                nl: "Laatst bijgewerkt voor X-apparaten",
+                fr: "Dernière mise à jour pour les appareils X",
+                it: "Ultimo aggiornamento per dispositivi X",
+                es: "Última actualización para dispositivos X",
+                pl: "Ostatnia aktualizacja dla urządzeń X",
+                uk: "Останнє оновлення для пристроїв X",
+                "zh-cn": "最后更新于 X 设备",
+            },
+            desc: "Create by Adapter",
+            read: true,
+            write: false,
+            def: 0,
+        };
+        await this.createDataPoint(`${this.adapter.namespace}.mqtt.x_last_update`, common, "state", 0, null, null);
     }
     public async createAuth(): Promise<any> {
         let common: CommonStates;

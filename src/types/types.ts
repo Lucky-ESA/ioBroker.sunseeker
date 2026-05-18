@@ -112,4 +112,5 @@ export type DevicesData = {
     trimmerCutterHeadUrl: null | string;
     trimmerHasnoCutterDiscUrl: null | string;
     trimmerHasnoCutterHeadUrl: null | string;
+    model: string;
 };

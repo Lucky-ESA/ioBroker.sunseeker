@@ -1,6 +1,7 @@
 export interface Objects {
     createAuth(): Promise<any>;
-    createRaw(id: string, name: string): Promise<any>;
+    createMqtt(): Promise<any>;
+    createRaw(id: string, name: string, model: string): Promise<any>;
 }
 
 export type CommonStates = {
@@ -41,6 +42,7 @@ export type CommonStates = {
         | "value.brightness"
         | "date.start"
         | "date.end"
+        | "value.time"
         | "time.span";
     write?: boolean;
     read?: boolean;

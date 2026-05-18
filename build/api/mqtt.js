@@ -37,6 +37,7 @@ var import_uuid = require("uuid");
 class mqttConnection extends import_node_events.EventEmitter {
   mqttClient;
   iob;
+  type;
   /**
    * MQTT Connection
    *
@@ -45,8 +46,84 @@ class mqttConnection extends import_node_events.EventEmitter {
   constructor(iob) {
     super();
     this.iob = iob;
+    this.type = "";
   }
-  start(user_id) {
+  start(user_id, password, type, appId) {
+    if (this.mqttClient) {
+      this.mqttClient.end();
+    }
+    this.type = type;
+    let host = "";
+    let port = 1884;
+    if (this.iob.config.region == "EU") {
+      if (type == "v") {
+        host = "app.mqttv1-eu.sk-robot.com";
+      } else {
+        host = "wfsmqtt-specific.sk-robot.com";
+      }
+    } else {
+      if (type == "v") {
+        host = "app.mqttv1-us.sk-robot.com";
+      } else {
+        host = "wfsmqtt-specific-us.sk-robot.com";
+      }
+    }
+    if (type == "v") {
+      port = 32884;
+    }
+    this.mqttClient = import_mqtt.default.connect(`mqtts://${host}`, {
+      username: `${this.iob.config.username}${appId}`,
+      password,
+      clientId: `${(0, import_uuid.v4)()}new`,
+      keepalive: 60,
+      reconnectPeriod: 1e3,
+      connectTimeout: 30 * 1e3,
+      port,
+      will: {
+        topic: "None",
+        payload: "None",
+        qos: 0,
+        retain: false
+      }
+    });
+    this.mqttClient.on("connect", () => {
+      this.iob.log.info("MQTT connected");
+      void this.setStatesConnection(true);
+      let ep = "wirelessdevice";
+      if (type == "v") {
+        ep = "wirelessmower";
+      }
+      this.mqttClient && this.mqttClient.subscribe(`/${ep}/${user_id}/get`, { qos: 0 });
+    });
+    this.mqttClient.on("message", (topic, message) => {
+      this.iob.log.debug(`MQTT message: ${topic} ${message.toString()}`);
+      try {
+        const data = JSON.parse(message.toString());
+        void this.setStatesUpdate(data);
+        this.emit("update", data);
+      } catch (error) {
+        this.iob.log.error(`MQTT message error: ${error.message}`);
+        this.iob.log.error(`MQTT message: ${message.toString()}`);
+      }
+    });
+    this.mqttClient.on("error", (error) => {
+      this.iob.log.error(`MQTT error: ${error}`);
+      void this.setStatesConnection(false);
+    });
+    this.mqttClient.on("close", () => {
+      this.iob.log.info("MQTT closed");
+      void this.setStatesConnection(false);
+    });
+    this.mqttClient.on("offline", () => {
+      this.iob.log.info("MQTT offline");
+      void this.setStatesConnection(false);
+    });
+    this.mqttClient.on("reconnect", () => {
+      this.iob.log.info("MQTT reconnect");
+      void this.setStatesConnection(true);
+    });
+  }
+  startOld(user_id) {
     if (this.mqttClient) {
       this.mqttClient.end();
     }
@@ -91,6 +168,24 @@ class mqttConnection extends import_node_events.EventEmitter {
       this.iob.log.info("MQTT reconnect");
     });
   }
+  async setStatesConnection(val) {
+    if (this.type == "x") {
+      await this.iob.setState(`mqtt.x_connection`, { val, ack: true });
+    } else {
+      await this.iob.setState(`mqtt.v_connection`, { val, ack: true });
+    }
+  }
+  async setStatesUpdate(obj) {
+    if (this.type == "x") {
+      if (obj.timestamp) {
+        await this.iob.setState(`mqtt.x_last_update`, { val: obj.timestamp, ack: true });
+      }
+    } else {
+      if (obj.timestamp) {
+        await this.iob.setState(`mqtt.v_last_update`, { val: obj.timestamp, ack: true });
+      }
+    }
+  }
   /**
    * Destroy all events
    */
@@ -98,6 +193,7 @@ class mqttConnection extends import_node_events.EventEmitter {
     if (this.mqttClient) {
       this.mqttClient.end();
     }
+    void this.setStatesConnection(false);
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

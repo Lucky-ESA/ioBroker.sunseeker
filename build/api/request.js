@@ -96,6 +96,30 @@ class axoisRrequest {
       return error;
     });
   }
+  /**
+   * @param url Icon URL
+   * @param header Icon URL
+   * @param options Options
+   * @returns axios response
+   */
+  async put(url, header, options) {
+    return await this.requestClient({
+      method: "PUT",
+      url,
+      ...header,
+      ...options
+    }).then((res) => {
+      return res;
+    }).catch((err) => {
+      let error = "";
+      if (err instanceof import_axios.AxiosError) {
+        error = err.response ? err.response.data : "Server Unavailable";
+      } else if (err instanceof Error) {
+        error = err.message;
+      }
+      return error;
+    });
+  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

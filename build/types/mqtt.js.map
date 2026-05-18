@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../src/types/mqtt.ts"],
-  "sourcesContent": ["export interface MQTT {\n    start(user_id: number): void;\n    destroy(): void;\n}\n"],
+  "sourcesContent": ["export interface MQTT {\n    start(user_id: number, password: string, type: string, appId: string): void;\n    startOld(user_id: number): void;\n    destroy(): void;\n}\n"],
   "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
   "names": []
 }

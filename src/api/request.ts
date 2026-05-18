@@ -75,4 +75,31 @@ export class axoisRrequest implements AxiosRrequest {
                 return error;
             });
     }
+
+    /**
+     * @param url Icon URL
+     * @param header Icon URL
+     * @param options Options
+     * @returns axios response
+     */
+    public async put(url: string, header: any, options: any): Promise<AxiosResponse> {
+        return await this.requestClient({
+            method: "PUT",
+            url: url,
+            ...header,
+            ...options,
+        })
+            .then((res: AxiosResponse) => {
+                return res;
+            })
+            .catch((err: any) => {
+                let error = "";
+                if (err instanceof AxiosError) {
+                    error = err.response ? err.response.data : "Server Unavailable";
+                } else if (err instanceof Error) {
+                    error = err.message;
+                }
+                return error;
+            });
+    }
 }

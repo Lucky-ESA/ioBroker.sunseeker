@@ -13,6 +13,13 @@ export interface AxiosRrequest {
      * @returns axios response
      */
     post(url: string, header: any, options: any): Promise<AxiosResponse>;
+    /**
+     * @param url Icon URL
+     * @param header Icon URL
+     * @param options Options
+     * @returns axios response
+     */
+    put(url: string, header: any, options: any): Promise<AxiosResponse>;
 }
 
 export interface AxiosResponse<T = any> {

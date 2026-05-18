@@ -6,6 +6,7 @@
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
 import Json2iob from "json2iob";
+import forge from "node-forge";
 import * as helper from "./api/helper";
 import { mqttConnection } from "./api/mqtt";
 import { creatObjects } from "./api/objects";
@@ -25,7 +26,8 @@ class Sunseeker extends utils.Adapter {
     private session: LoginResponse | undefined;
     private refreshTokenInterval: ioBroker.Interval | undefined;
     private devices: Map<string, DevicesData> = new Map<string, DevicesData>();
-    private mqtt: mqttConnection;
+    private mqttV: mqttConnection;
+    private mqttX: mqttConnection;
     public constructor(options: Partial<utils.AdapterOptions> = {}) {
         super({
             ...options,
@@ -44,7 +46,8 @@ class Sunseeker extends utils.Adapter {
         this.refreshTokenInterval = undefined;
         this.session = undefined;
         this.lang = "de";
-        this.mqtt = new mqttConnection(this);
+        this.mqttV = new mqttConnection(this);
+        this.mqttX = new mqttConnection(this);
         this.lHeader = {
             "Accept-Language": "de",
             Authorization: "Basic YXBwOmFwcA==",
@@ -81,6 +84,9 @@ class Sunseeker extends utils.Adapter {
         if (config && config.common && config.common.language) {
             this.lang = config.common.language === this.lang ? this.lang : "en";
         }
+        if (!helper.LANG.includes(this.lang)) {
+            this.lang = "en";
+        }
         this.lHeader["Accept-Language"] = this.lang;
         this.rHeader["Accept-Language"] = this.lang;
         await this.objects.createAuth();
@@ -109,19 +115,54 @@ class Sunseeker extends utils.Adapter {
             this.url = helper.US_URI;
             this.url_host = helper.US_HOST;
         }
+        this.log.info(`Create mqtt objects`);
+        await this.objects.createMqtt();
         this.rHeader.Host = this.url_host;
         this.log.info(`Start login`);
         const session = await this.login();
         if (session) {
             await this.setState("info.connection", true, true);
             await this.getDeviceList();
-            await this.getUpdateDevices();
+            //await this.getUpdateDevices();
             this.setRefreshToken();
             this.subscribeStates("*");
-            if (this.session && this.session.user_id) {
-                //this.mqtt.start(this.session.user_id);
-            }
         }
+    }
+
+    private async updateMqttPasswd(privat_key: string): Promise<boolean> {
+        const headers = {
+            headers: {
+                Authorization: `bearer ${this.session?.access_token}`,
+            },
+        };
+        const data = {
+            data: {
+                appIdCode: helper.appId,
+                appType: 2,
+                mqttsPassword: privat_key,
+                operatingSystemCode: "android",
+            },
+        };
+        const url = `${this.url}/admin/user/edit`;
+        const resp: any = await this.req.put(url, headers, data);
+        if (resp && resp.data && resp.data.data) {
+            this.log.debug(`updateMqttPasswd: ${JSON.stringify(resp.data)}`);
+        } else if (resp && resp && resp.code) {
+            this.log.error(`updateMqttPasswd code: ${JSON.stringify(resp)}`);
+        } else if (typeof resp === "object") {
+            if (resp.data) {
+                if (resp.data.code == 0 && resp.data.ok) {
+                    this.log.info(`Password successfully set`);
+                } else {
+                    this.log.error(`updateMqttPasswd Error Data: ${JSON.stringify(resp.data)}`);
+                }
+            } else {
+                this.log.error(`updateMqttPasswd Error: ${JSON.stringify(resp)}`);
+            }
+        } else {
+            this.log.error(`updateMqttPasswd Error String: ${resp}`);
+        }
+        return true;
     }
 
     private setRefreshToken(): void {
@@ -159,9 +200,13 @@ class Sunseeker extends utils.Adapter {
         } else if (session && session.code) {
             this.log.error(`Login Invalid: ${JSON.stringify(session)}`);
         } else if (typeof session === "object") {
-            this.log.error(`Login Error Data: ${JSON.stringify(session)}`);
+            if (session.data) {
+                this.log.error(`Login Error Data: ${JSON.stringify(session.data)}`);
+            } else {
+                this.log.error(`Login Error: ${JSON.stringify(session)}`);
+            }
         } else {
-            this.log.error(`Login Error: ${session}`);
+            this.log.error(`Login Error String: ${session}`);
         }
         return false;
     }
@@ -182,9 +227,13 @@ class Sunseeker extends utils.Adapter {
         } else if (resp && resp && resp.code) {
             this.log.error(`RefreshToken Invalid: ${JSON.stringify(resp)}`);
         } else if (typeof resp === "object") {
-            this.log.error(`RefreshToken Error Data: ${JSON.stringify(resp)}`);
+            if (resp.data) {
+                this.log.error(`RefreshToken Error Data: ${JSON.stringify(resp.data)}`);
+            } else {
+                this.log.error(`RefreshToken Error: ${JSON.stringify(resp)}`);
+            }
         } else {
-            this.log.error(`RefreshToken Error: ${resp}`);
+            this.log.error(`RefreshToken String: ${resp}`);
         }
         await this.setState("info.connection", false, true);
     }
@@ -195,15 +244,61 @@ class Sunseeker extends utils.Adapter {
         };
         const url = `${this.url}/app_wireless_mower/device-user/getCustomDevice?all=true`;
         const resp: any = await this.req.get(url, headers, null);
+        let v = false;
+        let x = false;
         if (resp && resp.data && resp.data.data) {
             this.log.debug(`getDeviceList: ${JSON.stringify(resp.data)}`);
             for (const device of resp.data.data) {
                 if (!this.devices.get(device.deviceId)) {
                     this.log.info(`Create mower raw for device ${device.deviceId}`);
+                    if (helper.V.includes(device.modelName.slice(0, 2))) {
+                        device.model = "V";
+                        v = true;
+                    } else if (helper.X.includes(device.modelName.slice(0, 2))) {
+                        device.model = "X";
+                        x = true;
+                    } else {
+                        this.log.error(`Device ${device.modelName} is unknown. Create issue please.`);
+                        continue;
+                    }
                     this.devices.set(device.deviceId, device);
-                    await this.objects.createRaw(device.deviceId, device.deviceName);
+                    await this.objects.createRaw(device.deviceId, device.deviceName, device.model);
                 }
-                await this.json2iob.parse(`${device.deviceId}.mower_raw`, device, { forceIndex: true });
+                await this.json2iob.parse(`${device.deviceId}.mower_all_raw.mower_raw`, device, { forceIndex: true });
+            }
+            if (v) {
+                this.log.info(`Initializing MQTT V connection`);
+                if (this.session && this.session.user_id) {
+                    const password = this.randomString(24);
+                    const privatKey = this.rsa_base64(password);
+                    this.log.debug(`V Password: ${password}`);
+                    this.log.debug(`V PrivatKey: ${privatKey}`);
+                    await this.updateMqttPasswd(privatKey);
+                    this.mqttV.start(this.session.user_id, password, "v", helper.appId);
+                    this.mqttV.on("update", this.getUpdateVData.bind(this));
+                    const mqttData = {
+                        pw: password,
+                        key: privatKey,
+                    };
+                    await this.setState(`mqtt.v_access_data`, { val: JSON.stringify(mqttData), ack: true });
+                }
+            }
+            if (x) {
+                this.log.info(`Initializing MQTT X connection`);
+                if (this.session && this.session.user_id) {
+                    const password = this.randomString(24);
+                    const privatKey = this.rsa_base64(password);
+                    this.log.debug(`X Password: ${password}`);
+                    this.log.debug(`X PrivatKey: ${privatKey}`);
+                    await this.updateMqttPasswd(privatKey);
+                    this.mqttV.start(this.session.user_id, password, "x", helper.appId);
+                    this.mqttV.on("update", this.getUpdateXData.bind(this));
+                    const mqttData = {
+                        pw: password,
+                        key: privatKey,
+                    };
+                    await this.setState(`mqtt.x_access_data`, { val: JSON.stringify(mqttData), ack: true });
+                }
             }
             return true;
         } else if (resp && resp && resp.code) {
@@ -212,12 +307,20 @@ class Sunseeker extends utils.Adapter {
             if (resp.data) {
                 this.log.error(`DeviceList Error Data: ${JSON.stringify(resp.data)}`);
             } else {
-                this.log.error(`DeviceList Error Data: ${JSON.stringify(resp)}`);
+                this.log.error(`DeviceList Error: ${JSON.stringify(resp)}`);
             }
         } else {
-            this.log.error(`DeviceList Error: ${resp}`);
+            this.log.error(`DeviceList Error String: ${resp}`);
         }
         return false;
+    }
+
+    private getUpdateXData(message: any): void {
+        this.log.debug(`getUpdateXData: ${JSON.stringify(message)}`);
+    }
+
+    private getUpdateVData(message: any): void {
+        this.log.debug(`getUpdateXData: ${JSON.stringify(message)}`);
     }
 
     private async getUpdateDevices(): Promise<boolean> {
@@ -226,42 +329,44 @@ class Sunseeker extends utils.Adapter {
                 `${this.url}/wireless_map/wireless_device/get?deviceSn=${this.devices.get(id)?.deviceSn}`,
                 id,
                 "getDeviceMap",
-                "mower_map_info",
+                "mower_all_raw.mower_map_info",
                 "mower map info",
             );
             await this.getDeviceData(
                 `${this.url}/wireless_map/wireless_device/getHeatMap?deviceSn=${this.devices.get(id)?.deviceSn}`,
                 id,
                 "getDeviceHeadMap",
-                "mower_head_map_info",
+                "mower_all_raw.mower_head_map_info",
                 "mower head map info",
             );
             await this.getDeviceData(
                 `${this.url}/wireless_map/backup_map/get?sn=${this.devices.get(id)?.deviceSn}`,
                 id,
                 "getDeviceBackupMap",
-                "mower_backup_map_info",
+                "mower_all_raw.mower_backup_map_info",
                 "mower backup map info",
             );
-            await this.getDeviceData(
-                `${this.url}/app_wirelessv1_mower/wirelessv1/device-schedule/${id}`,
-                id,
-                "getDeviceSchedule",
-                "mower_schedule",
-                "mower schedule",
-            );
+            if (this.devices.get(id)?.model == "V") {
+                await this.getDeviceData(
+                    `${this.url}/app_wirelessv1_mower/wirelessv1/device-schedule/${id}`,
+                    id,
+                    "getDeviceSchedule",
+                    "mower_all_raw.mower_schedule",
+                    "mower schedule",
+                );
+            }
             await this.getDeviceData(
                 `${this.url}/app_wireless_mower/device/info/${id}`,
                 id,
                 "getDeviceUpdate",
-                "mower_raw_info",
+                "mower_all_raw.mower_raw_info",
                 "update",
             );
             await this.getDeviceData(
                 `${this.url}/app_wireless_mower/work_record/page?sn=${this.devices.get(id)?.deviceSn}&current=1&size=10`,
                 id,
                 "getDeviceWorkRecord",
-                "mower_work_record",
+                "mower_all_raw.mower_work_record",
                 "work record",
             );
         }
@@ -283,10 +388,10 @@ class Sunseeker extends utils.Adapter {
             if (resp.data) {
                 this.log.error(`${log} Error Data: ${JSON.stringify(resp.data)}`);
             } else {
-                this.log.error(`${log} Error Data: ${JSON.stringify(resp)}`);
+                this.log.error(`${log} Error: ${JSON.stringify(resp)}`);
             }
         } else {
-            this.log.error(`${log} Error: ${resp}`);
+            this.log.error(`${log} Error String: ${resp}`);
         }
         return true;
     }
@@ -301,14 +406,70 @@ class Sunseeker extends utils.Adapter {
             if (resp && resp.data && resp.data.data) {
                 this.log.debug(`getDeviceUpdate: ${JSON.stringify(resp.data)}`);
                 this.log.info(`Create update for device ${id}`);
-                await this.json2iob.parse(`${id}.mower_raw_info`, resp.data.data, { forceIndex: true });
+                await this.json2iob.parse(`${id}.mower_all_raw.mower_raw_info`, resp.data.data, { forceIndex: true });
             } else if (resp && resp && resp.code) {
-                this.log.error(`DeviceData Invalid: ${JSON.stringify(resp)}`);
+                this.log.error(`getDeviceUpdate Invalid: ${JSON.stringify(resp)}`);
             } else if (typeof resp === "object") {
-                this.log.error(`DeviceData Error Data: ${JSON.stringify(resp)}`);
+                if (resp.data) {
+                    this.log.error(`getDeviceUpdate Error Data: ${JSON.stringify(resp.data)}`);
+                } else {
+                    this.log.error(`getDeviceUpdate Error: ${JSON.stringify(resp)}`);
+                }
             } else {
-                this.log.error(`DeviceData Error: ${resp}`);
+                this.log.error(`DeviceData Error String: ${resp}`);
             }
+        }
+        return true;
+    }
+
+    private async getStartDataMqtt(
+        deviceSN: string | undefined,
+        model: string | undefined,
+        id: string,
+        key: string,
+    ): Promise<boolean> {
+        if (deviceSN == undefined || model == undefined) {
+            this.log.error(`Param deviceSN or model is undefined!!!`);
+            return false;
+        }
+        const data = {
+            data: {
+                appId: this.session?.user_id,
+                deviceSn: deviceSN,
+                id: id,
+                key: key,
+                method: "get_property",
+            },
+        };
+        let path = helper.CMDURL_X;
+        if (model == "v") {
+            path = helper.CMDURL_V;
+        }
+        const headers = {
+            headers: {
+                Authorization: `bearer ${this.session?.access_token}`,
+                "Content-Type": "application/json",
+                Connection: "Keep-Alive",
+            },
+        };
+        const url = `${this.url}${path}get_property`;
+        const resp: any = await this.req.post(url, headers, data);
+        if (resp && resp.data && resp.data.data) {
+            this.log.debug(`getStartDataMqtt: ${JSON.stringify(resp.data)}`);
+        } else if (resp && resp && resp.code) {
+            this.log.error(`getStartDataMqtt Invalid: ${JSON.stringify(resp)}`);
+        } else if (typeof resp === "object") {
+            if (resp.data) {
+                if (resp.data.code == 0 && resp.data.ok) {
+                    this.log.info(`getStartDataMqtt Request OK`);
+                } else {
+                    this.log.error(`getStartDataMqtt Error Data: ${JSON.stringify(resp.data)}`);
+                }
+            } else {
+                this.log.error(`getStartDataMqtt Error: ${JSON.stringify(resp)}`);
+            }
+        } else {
+            this.log.error(`getStartDataMqtt Error String: ${resp}`);
         }
         return true;
     }
@@ -321,7 +482,8 @@ class Sunseeker extends utils.Adapter {
     private onUnload(callback: () => void): void {
         try {
             this.refreshTokenInterval && this.clearInterval(this.refreshTokenInterval);
-            this.mqtt.destroy();
+            this.mqttV.destroy();
+            this.mqttX.destroy();
             callback();
         } catch (error) {
             this.log.error(`Error during unloading: ${(error as Error).message}`);
@@ -353,7 +515,12 @@ class Sunseeker extends utils.Adapter {
     private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
         if (state) {
             if (!state.ack) {
+                const deviceId = id.split(".")[2];
                 const command = id.split(".").pop();
+                this.log.debug(deviceId);
+                if (deviceId == null || this.devices.get(deviceId) == null) {
+                    this.log.error(`Cannot found device ${id}`);
+                }
                 if (command === "update") {
                     void this.getDeviceUpdate();
                     void this.setState(id, { ack: true });
@@ -362,6 +529,22 @@ class Sunseeker extends utils.Adapter {
                     void this.setState(id, { ack: true });
                 } else if (command === "update_all") {
                     void this.getUpdateDevices();
+                    void this.setState(id, { ack: true });
+                } else if (command === "all_properties") {
+                    void this.getStartDataMqtt(
+                        this.devices.get(deviceId)?.deviceSn,
+                        this.devices.get(deviceId)?.model,
+                        "getDevAllProperty",
+                        "all",
+                    );
+                    void this.setState(id, { ack: true });
+                } else if (command === "getRegionId") {
+                    void this.getStartDataMqtt(
+                        this.devices.get(deviceId)?.deviceSn,
+                        this.devices.get(deviceId)?.model,
+                        "getSelectRegionID",
+                        "select_region_id",
+                    );
                     void this.setState(id, { ack: true });
                 }
             }
@@ -399,6 +582,22 @@ class Sunseeker extends utils.Adapter {
             return `${1 + Math.ceil(dayDiff / 7)}-${getDay}`;
         }
         return `${Math.ceil(dayDiff / 7)}-${getDay}`;
+    }
+
+    private randomString(length: number): string {
+        let result = "";
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
+    private rsa_base64(text: string): string {
+        const publicKey = forge.pki.publicKeyFromPem(helper.public_key);
+        const encrypted = publicKey.encrypt(text);
+        return forge.util.encode64(encrypted);
     }
 
     private async setSessionValue(): Promise<void> {

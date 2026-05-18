@@ -32,7 +32,7 @@ class creatObjects {
     this.adapter = this.iob;
   }
   adapter;
-  async createRaw(id, name) {
+  async createRaw(id, name, model) {
     let common;
     common = {
       name,
@@ -60,6 +60,58 @@ class creatObjects {
     await this.createDataPoint(`${this.adapter.namespace}.${id}.mower`, common, "channel", null, null, null);
     common = {
       name: {
+        en: "Mower all raw data",
+        de: "M\xE4her \u2013 alle Rohdaten",
+        ru: "\u0412\u0441\u0435 \u0438\u0441\u0445\u043E\u0434\u043D\u044B\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0433\u0430\u0437\u043E\u043D\u043E\u043A\u043E\u0441\u0438\u043B\u043A\u0438",
+        pt: "Cortador de grama, todos os dados brutos",
+        nl: "Maai alle onbewerkte gegevens",
+        fr: "Tondeuse toutes les donn\xE9es brutes",
+        it: "Taglia tutti i dati grezzi",
+        es: "Cortac\xE9sped todos los datos brutos",
+        pl: "Kosi wszystkie surowe dane",
+        uk: "\u0412\u0441\u0456 \u043D\u0435\u043E\u0431\u0440\u043E\u0431\u043B\u0435\u043D\u0456 \u0434\u0430\u043D\u0456 \u043A\u043E\u0441\u0430\u0440\u043A\u0438",
+        "zh-cn": "\u5272\u8349\u673A\u6240\u6709\u539F\u59CB\u6570\u636E"
+      },
+      desc: "Create by Adapter",
+      icon: "img/raw.png"
+    };
+    await this.createDataPoint(
+      `${this.adapter.namespace}.${id}.mower_all_raw`,
+      common,
+      "channel",
+      null,
+      null,
+      null
+    );
+    if (model == "V") {
+      common = {
+        name: {
+          en: "Mower scheduler",
+          de: "M\xE4hplaner",
+          ru: "\u041F\u043B\u0430\u043D\u0438\u0440\u043E\u0432\u0449\u0438\u043A \u0440\u0430\u0431\u043E\u0442\u044B \u0433\u0430\u0437\u043E\u043D\u043E\u043A\u043E\u0441\u0438\u043B\u043A\u0438",
+          pt: "Agendador de cortador de grama",
+          nl: "Maaierplanner",
+          fr: "programmateur de tondeuse",
+          it: "Programmatore di taglio",
+          es: "Programador de cortac\xE9sped",
+          pl: "Harmonogram kosiarki",
+          uk: "\u041F\u043B\u0430\u043D\u0443\u0432\u0430\u043B\u044C\u043D\u0438\u043A \u043A\u043E\u0441\u0430\u0440\u043E\u043A",
+          "zh-cn": "\u5272\u8349\u673A\u8C03\u5EA6\u5668"
+        },
+        desc: "Create by Adapter",
+        icon: "img/schedule.png"
+      };
+      await this.createDataPoint(
+        `${this.adapter.namespace}.${id}.mower_all_raw.mower_schedule`,
+        common,
+        "channel",
+        null,
+        null,
+        null
+      );
+    }
+    common = {
+      name: {
         en: "Mower map info",
         de: "Informationen zur M\xE4herkarte",
         ru: "\u0418\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u044F \u043E \u043A\u0430\u0440\u0442\u0435 \u0433\u0430\u0437\u043E\u043D\u043E\u043A\u043E\u0441\u0438\u043B\u043A\u0438",
@@ -76,7 +128,7 @@ class creatObjects {
       icon: "img/map.png"
     };
     await this.createDataPoint(
-      `${this.adapter.namespace}.${id}.mower_map_info`,
+      `${this.adapter.namespace}.${id}.mower_all_raw.mower_map_info`,
       common,
       "channel",
       null,
@@ -101,7 +153,7 @@ class creatObjects {
       icon: "img/map.png"
     };
     await this.createDataPoint(
-      `${this.adapter.namespace}.${id}.mower_head_map_info`,
+      `${this.adapter.namespace}.${id}.mower_all_raw.mower_head_map_info`,
       common,
       "channel",
       null,
@@ -126,7 +178,7 @@ class creatObjects {
       icon: "img/map.png"
     };
     await this.createDataPoint(
-      `${this.adapter.namespace}.${id}.mower_backup_map_info`,
+      `${this.adapter.namespace}.${id}.mower_all_raw.mower_backup_map_info`,
       common,
       "channel",
       null,
@@ -151,7 +203,7 @@ class creatObjects {
       icon: "img/work.png"
     };
     await this.createDataPoint(
-      `${this.adapter.namespace}.${id}.mower_work_record`,
+      `${this.adapter.namespace}.${id}.mower_all_raw.mower_work_record`,
       common,
       "channel",
       null,
@@ -179,6 +231,62 @@ class creatObjects {
       write: true
     };
     await this.createDataPoint(`${this.adapter.namespace}.${id}.mower.update`, common, "state", null, null, null);
+    common = {
+      type: "boolean",
+      role: "button",
+      name: {
+        en: "All device properties",
+        de: "Alle Ger\xE4teeigenschaften",
+        ru: "\u0412\u0441\u0435 \u0441\u0432\u043E\u0439\u0441\u0442\u0432\u0430 \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0430",
+        pt: "Todas as propriedades do dispositivo",
+        nl: "Alle apparaateigenschappen",
+        fr: "Toutes les propri\xE9t\xE9s de l'appareil",
+        it: "Tutte le propriet\xE0 del dispositivo",
+        es: "Todas las propiedades del dispositivo",
+        pl: "Wszystkie w\u0142a\u015Bciwo\u015Bci urz\u0105dzenia",
+        uk: "\u0423\u0441\u0456 \u0432\u043B\u0430\u0441\u0442\u0438\u0432\u043E\u0441\u0442\u0456 \u043F\u0440\u0438\u0441\u0442\u0440\u043E\u044E",
+        "zh-cn": "\u6240\u6709\u8BBE\u5907\u5C5E\u6027"
+      },
+      desc: "Create by Adapter",
+      read: false,
+      write: true
+    };
+    await this.createDataPoint(
+      `${this.adapter.namespace}.${id}.mower.all_properties`,
+      common,
+      "state",
+      null,
+      null,
+      null
+    );
+    common = {
+      type: "boolean",
+      role: "button",
+      name: {
+        en: "Get Region ID",
+        de: "Regions-ID abrufen",
+        ru: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0438\u0434\u0435\u043D\u0442\u0438\u0444\u0438\u043A\u0430\u0442\u043E\u0440 \u0440\u0435\u0433\u0438\u043E\u043D\u0430",
+        pt: "Obter ID da regi\xE3o",
+        nl: "Regio-ID ophalen",
+        fr: "Obtenir l'identifiant de r\xE9gion",
+        it: "Ottieni l'ID della regione",
+        es: "Obtener ID de regi\xF3n",
+        pl: "Uzyskaj identyfikator regionu",
+        uk: "\u041E\u0442\u0440\u0438\u043C\u0430\u0442\u0438 \u0456\u0434\u0435\u043D\u0442\u0438\u0444\u0456\u043A\u0430\u0442\u043E\u0440 \u0440\u0435\u0433\u0456\u043E\u043D\u0443",
+        "zh-cn": "\u83B7\u53D6\u533A\u57DF ID"
+      },
+      desc: "Create by Adapter",
+      read: false,
+      write: true
+    };
+    await this.createDataPoint(
+      `${this.adapter.namespace}.${id}.mower.getRegionId`,
+      common,
+      "state",
+      null,
+      null,
+      null
+    );
     common = {
       type: "boolean",
       role: "button",
@@ -252,7 +360,14 @@ class creatObjects {
       desc: "Create by Adapter",
       icon: "img/raw.png"
     };
-    await this.createDataPoint(`${this.adapter.namespace}.${id}.mower_raw`, common, "channel", null, null, null);
+    await this.createDataPoint(
+      `${this.adapter.namespace}.${id}.mower_all_raw.mower_raw`,
+      common,
+      "channel",
+      null,
+      null,
+      null
+    );
     common = {
       name: {
         en: "Mower info raw data",
@@ -271,13 +386,166 @@ class creatObjects {
       icon: "img/raw.png"
     };
     await this.createDataPoint(
-      `${this.adapter.namespace}.${id}.mower_raw_info`,
+      `${this.adapter.namespace}.${id}.mower_all_raw.mower_raw_info`,
       common,
       "channel",
       null,
       null,
       null
     );
+  }
+  async createMqtt() {
+    let common;
+    common = {
+      name: {
+        en: "MQTT Connection",
+        de: "MQTT-Verbindung",
+        ru: "\u041F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u0435 MQTT",
+        pt: "Conex\xE3o MQTT",
+        nl: "MQTT-verbinding",
+        fr: "Connexion MQTT",
+        it: "Connessione MQTT",
+        es: "Conexi\xF3n MQTT",
+        pl: "Po\u0142\u0105czenie MQTT",
+        uk: "\u041F\u0456\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u043D\u044F MQTT",
+        "zh-cn": "MQTT \u8FDE\u63A5"
+      },
+      desc: "Create by Adapter",
+      icon: "img/mqtt.png"
+    };
+    await this.createDataPoint(`${this.adapter.namespace}.mqtt`, common, "channel", null, null, null);
+    common = {
+      type: "boolean",
+      role: "switch",
+      name: {
+        en: "MQTT status for V devices",
+        de: "MQTT-Status f\xFCr V-Ger\xE4te",
+        ru: "\u0421\u0442\u0430\u0442\u0443\u0441 MQTT \u0434\u043B\u044F \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432 V",
+        pt: "Status MQTT para dispositivos V",
+        nl: "MQTT-status voor V-apparaten",
+        fr: "\xC9tat MQTT pour les appareils V",
+        it: "Stato MQTT per i dispositivi V",
+        es: "Estado MQTT para dispositivos V",
+        pl: "Status MQTT dla urz\u0105dze\u0144 V",
+        uk: "\u0421\u0442\u0430\u043D MQTT \u0434\u043B\u044F V-\u043F\u0440\u0438\u0441\u0442\u0440\u043E\u0457\u0432",
+        "zh-cn": "V \u8BBE\u5907\u7684 MQTT \u72B6\u6001"
+      },
+      desc: "Create by Adapter",
+      read: true,
+      write: false,
+      def: false
+    };
+    await this.createDataPoint(`${this.adapter.namespace}.mqtt.v_connection`, common, "state", false, null, null);
+    common = {
+      type: "string",
+      role: "json",
+      name: {
+        en: "MQTT access data for V devices",
+        de: "MQTT-Zugriffsdaten f\xFCr V-Ger\xE4te",
+        ru: "\u0414\u0430\u043D\u043D\u044B\u0435 \u0434\u043E\u0441\u0442\u0443\u043F\u0430 MQTT \u0434\u043B\u044F \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432 V",
+        pt: "Dados de acesso MQTT para dispositivos V",
+        nl: "MQTT-toegangsgegevens voor V-apparaten",
+        fr: "Donn\xE9es d'acc\xE8s MQTT pour les appareils V",
+        it: "Dati di accesso MQTT per dispositivi V",
+        es: "Datos de acceso MQTT para dispositivos V",
+        pl: "Dane dost\u0119powe MQTT dla urz\u0105dze\u0144 V",
+        uk: "\u0414\u0430\u043D\u0456 \u0434\u043E\u0441\u0442\u0443\u043F\u0443 MQTT \u0434\u043B\u044F \u043F\u0440\u0438\u0441\u0442\u0440\u043E\u0457\u0432 V",
+        "zh-cn": "V \u8BBE\u5907\u7684 MQTT \u8BBF\u95EE\u6570\u636E"
+      },
+      desc: "Create by Adapter",
+      read: true,
+      write: false,
+      def: JSON.stringify({})
+    };
+    await this.createDataPoint(`${this.adapter.namespace}.mqtt.v_access_data`, common, "state", false, null, null);
+    common = {
+      type: "number",
+      role: "value.time",
+      name: {
+        en: "Last updated for V devices",
+        de: "Zuletzt aktualisiert f\xFCr V-Ger\xE4te",
+        ru: "\u041F\u043E\u0441\u043B\u0435\u0434\u043D\u0435\u0435 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u0434\u043B\u044F \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432 V.",
+        pt: "\xDAltima atualiza\xE7\xE3o para dispositivos V",
+        nl: "Laatst bijgewerkt voor V-apparaten",
+        fr: "Derni\xE8re mise \xE0 jour pour les appareils V",
+        it: "Ultimo aggiornamento per dispositivi V",
+        es: "\xDAltima actualizaci\xF3n para dispositivos V",
+        pl: "Ostatnia aktualizacja dla urz\u0105dze\u0144 V",
+        uk: "\u041E\u0441\u0442\u0430\u043D\u043D\u0454 \u043E\u043D\u043E\u0432\u043B\u0435\u043D\u043D\u044F \u0434\u043B\u044F \u043F\u0440\u0438\u0441\u0442\u0440\u043E\u0457\u0432 V",
+        "zh-cn": "\u6700\u540E\u66F4\u65B0\u4E8E V \u8BBE\u5907"
+      },
+      desc: "Create by Adapter",
+      read: true,
+      write: false,
+      def: 0
+    };
+    await this.createDataPoint(`${this.adapter.namespace}.mqtt.v_last_update`, common, "state", 0, null, null);
+    common = {
+      type: "boolean",
+      role: "switch",
+      name: {
+        en: "MQTT status for X devices",
+        de: "MQTT-Status f\xFCr X Ger\xE4te",
+        ru: "\u0421\u0442\u0430\u0442\u0443\u0441 MQTT \u0434\u043B\u044F \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432 X",
+        pt: "Status MQTT para dispositivos X",
+        nl: "MQTT-status voor X-apparaten",
+        fr: "\xC9tat MQTT pour les appareils X",
+        it: "Stato MQTT per i dispositivi X",
+        es: "Estado MQTT para dispositivos X",
+        pl: "Status MQTT dla urz\u0105dze\u0144 X",
+        uk: "\u0421\u0442\u0430\u043D MQTT \u0434\u043B\u044F \u043F\u0440\u0438\u0441\u0442\u0440\u043E\u0457\u0432 X",
+        "zh-cn": "X \u8BBE\u5907\u7684 MQTT \u72B6\u6001"
+      },
+      desc: "Create by Adapter",
+      read: true,
+      write: false,
+      def: false
+    };
+    await this.createDataPoint(`${this.adapter.namespace}.mqtt.x_connection`, common, "state", false, null, null);
+    common = {
+      type: "string",
+      role: "json",
+      name: {
+        en: "MQTT access data for X devices",
+        de: "MQTT-Zugriffsdaten f\xFCr X Ger\xE4te",
+        ru: "\u0414\u043E\u0441\u0442\u0443\u043F \u043A \u0434\u0430\u043D\u043D\u044B\u043C MQTT \u0434\u043B\u044F \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432 X",
+        pt: "Dados de acesso MQTT para dispositivos X",
+        nl: "MQTT-toegangsgegevens voor X-apparaten",
+        fr: "Donn\xE9es d'acc\xE8s MQTT pour les appareils X",
+        it: "Dati di accesso MQTT per dispositivi X",
+        es: "Datos de acceso MQTT para dispositivos X",
+        pl: "Dane dost\u0119powe MQTT dla urz\u0105dze\u0144 X",
+        uk: "\u0414\u0430\u043D\u0456 \u0434\u043E\u0441\u0442\u0443\u043F\u0443 MQTT \u0434\u043B\u044F \u043F\u0440\u0438\u0441\u0442\u0440\u043E\u0457\u0432 X",
+        "zh-cn": "X \u8BBE\u5907\u7684 MQTT \u8BBF\u95EE\u6570\u636E"
+      },
+      desc: "Create by Adapter",
+      read: true,
+      write: false,
+      def: JSON.stringify({})
+    };
+    await this.createDataPoint(`${this.adapter.namespace}.mqtt.x_access_data`, common, "state", false, null, null);
+    common = {
+      type: "number",
+      role: "value.time",
+      name: {
+        en: "Last updated for X devices",
+        de: "Zuletzt aktualisiert f\xFCr X-Ger\xE4te",
+        ru: "\u041F\u043E\u0441\u043B\u0435\u0434\u043D\u0435\u0435 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u0434\u043B\u044F \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432 X",
+        pt: "\xDAltima atualiza\xE7\xE3o para dispositivos X",
+        nl: "Laatst bijgewerkt voor X-apparaten",
+        fr: "Derni\xE8re mise \xE0 jour pour les appareils X",
+        it: "Ultimo aggiornamento per dispositivi X",
+        es: "\xDAltima actualizaci\xF3n para dispositivos X",
+        pl: "Ostatnia aktualizacja dla urz\u0105dze\u0144 X",
+        uk: "\u041E\u0441\u0442\u0430\u043D\u043D\u0454 \u043E\u043D\u043E\u0432\u043B\u0435\u043D\u043D\u044F \u0434\u043B\u044F \u043F\u0440\u0438\u0441\u0442\u0440\u043E\u0457\u0432 X",
+        "zh-cn": "\u6700\u540E\u66F4\u65B0\u4E8E X \u8BBE\u5907"
+      },
+      desc: "Create by Adapter",
+      read: true,
+      write: false,
+      def: 0
+    };
+    await this.createDataPoint(`${this.adapter.namespace}.mqtt.x_last_update`, common, "state", 0, null, null);
   }
   async createAuth() {
     let common;
