@@ -1,14 +1,343 @@
 import type { CommonStates, Objects } from "../types/objects";
 
-export class creatObjects implements Objects {
-    private adapter: ioBroker.Adapter;
+export class createObjects implements Objects {
+    private iob: ioBroker.Adapter;
     /**
      * ioBroker Objects
      *
      * @param iob ioBroker.Adapter
      */
-    constructor(private readonly iob: ioBroker.Adapter) {
-        this.adapter = this.iob;
+    constructor(iob: ioBroker.Adapter) {
+        this.iob = iob;
+    }
+    public async createMowerObject(message: any): Promise<any> {
+        let common: CommonStates;
+        if (message.deviceSn == null || message.data == null) {
+            this.iob.log.error(`Missing message data!!!`);
+            return;
+        }
+        const sn = message.deviceSn;
+        const data = message.data;
+        if (data.camera_temp != null) {
+            common = {
+                type: "number",
+                role: "value",
+                name: {
+                    en: "Camera Temperature",
+                    de: "Kameratemperatur",
+                    ru: "Температура камеры",
+                    pt: "Temperatura da câmera",
+                    nl: "Cameratemperatuur",
+                    fr: "Température de la caméra",
+                    it: "Temperatura della fotocamera",
+                    es: "Temperatura de la cámara",
+                    pl: "Temperatura kamery",
+                    uk: "Температура камери",
+                    "zh-cn": "相机温度",
+                },
+                desc: "Create by Adapter",
+                read: true,
+                write: false,
+                def: 0,
+                unit: "°C",
+            };
+            await this.createDataPoint(
+                `${this.iob.namespace}.${sn}.mower.camera_temp`,
+                common,
+                "state",
+                data.camera_temp,
+                null,
+                null,
+            );
+        }
+        if (data.soc_temp != null) {
+            common = {
+                type: "number",
+                role: "value",
+                name: {
+                    en: "Motor Temperature",
+                    de: "Motortemperatur",
+                    ru: "Температура двигателя",
+                    pt: "Temperatura do motor",
+                    nl: "Motortemperatuur",
+                    fr: "Température du moteur",
+                    it: "Temperatura del motore",
+                    es: "Temperatura del motor",
+                    pl: "Temperatura silnika",
+                    uk: "Температура двигуна",
+                    "zh-cn": "电机温度",
+                },
+                desc: "Create by Adapter",
+                read: true,
+                write: false,
+                def: 0,
+                unit: "°C",
+            };
+            await this.createDataPoint(
+                `${this.iob.namespace}.${sn}.mower.soc_temp`,
+                common,
+                "state",
+                data.soc_temp,
+                null,
+                null,
+            );
+        }
+        if (data.wifi_sig != null) {
+            common = {
+                type: "number",
+                role: "value",
+                name: {
+                    en: "WIFI",
+                    de: "W-LAN",
+                    ru: "WI-FI",
+                    pt: "WI-FI",
+                    nl: "WIFI",
+                    fr: "Wi-Fi",
+                    it: "WIFI",
+                    es: "WIFI",
+                    pl: "Wi-Fi",
+                    uk: "Wi-Fi",
+                    "zh-cn": "无线上网",
+                },
+                desc: "Create by Adapter",
+                read: true,
+                write: false,
+                def: 0,
+                unit: "dBm",
+            };
+            await this.createDataPoint(
+                `${this.iob.namespace}.${sn}.mower.wifi_sig`,
+                common,
+                "state",
+                data.wifi_sig,
+                null,
+                null,
+            );
+        }
+        if (data.net_4g_sig != null) {
+            common = {
+                type: "number",
+                role: "value",
+                name: {
+                    en: "Network 4G Signature",
+                    de: "Netzwerk 4G-Signatur",
+                    ru: "Подпись сети 4G",
+                    pt: "Assinatura de rede 4G",
+                    nl: "Netwerk 4G-signatuur",
+                    fr: "Signature du réseau 4G",
+                    it: "Firma di rete 4G",
+                    es: "Firma de red 4G",
+                    pl: "Sygnatura sieci 4G",
+                    uk: "Мережа 4G Підпис",
+                    "zh-cn": "网络 4G 特征",
+                },
+                desc: "Create by Adapter",
+                read: true,
+                write: false,
+                def: 0,
+                unit: "dBm",
+            };
+            await this.createDataPoint(
+                `${this.iob.namespace}.${sn}.mower.net_4g_sig`,
+                common,
+                "state",
+                data.net_4g_sig,
+                null,
+                null,
+            );
+        }
+        if (data.robot_pos != null) {
+            common = {
+                type: "number",
+                role: "value",
+                name: {
+                    en: "Robot position angle",
+                    de: "Roboterpositionswinkel",
+                    ru: "Угол положения робота",
+                    pt: "ângulo de posição do robô",
+                    nl: "Robotpositiehoek",
+                    fr: "angle de position du robot",
+                    it: "angolo di posizione del robot",
+                    es: "Ángulo de posición del robot",
+                    pl: "Kąt położenia robota",
+                    uk: "Кут положення робота",
+                    "zh-cn": "机器人位置角",
+                },
+                desc: "Create by Adapter",
+                read: true,
+                write: false,
+                def: 0,
+            };
+            await this.createDataPoint(
+                `${this.iob.namespace}.${sn}.mower.robot_pos_angle`,
+                common,
+                "state",
+                data.robot_pos,
+                null,
+                null,
+            );
+            await this.createDataPoint(
+                `${this.iob.namespace}.${sn}.mower.net_4g_sig`,
+                common,
+                "state",
+                data.net_4g_sig,
+                null,
+                null,
+            );
+        }
+    }
+    public async createMowerObjects(id: string, model: string): Promise<any> {
+        let common: CommonStates;
+        common = {
+            type: "number",
+            role: "value",
+            name: {
+                en: "Mower Status",
+                de: "Mäherstatus",
+                ru: "Состояние газонокосилки",
+                pt: "Status do cortador de grama",
+                nl: "Maaierstatus",
+                fr: "État de la tondeuse",
+                it: "Stato del tosaerba",
+                es: "Estado de la cortadora de césped",
+                pl: "Status kosiarki",
+                uk: "Стан косарки",
+                "zh-cn": "割草机状态",
+            },
+            desc: "Create by Adapter",
+            read: true,
+            write: false,
+            def: 0,
+            states: {
+                0: `${model == "X" ? "unknown" : "standby"}`,
+                1: `${model == "X" ? "idle" : "mowing"}`,
+                2: `${model == "X" ? "working" : "going home"}`,
+                3: `${model == "X" ? "pause" : "charging"}`,
+                4: "unknown",
+                5: "unknown",
+                6: "error",
+                7: `${model == "X" ? "return" : "mowing border"}`,
+                8: "pause",
+                9: "charging",
+                10: "charging full",
+                11: "unknown",
+                12: "unknown",
+                13: "offline",
+                14: "continue cutting",
+                15: "location",
+                16: "firmware update",
+                17: "stuck",
+                18: "stop",
+                19: "unknown",
+                20: "enter pin",
+            },
+        };
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower.status`, common, "state", null, null, null);
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "Mowing start",
+                de: "Mähen starten",
+                ru: "Начало кошения",
+                pt: "Início da poda",
+                nl: "Maaien begint",
+                fr: "Début de la tonte",
+                it: "Inizio falciatura",
+                es: "Inicio del corte de césped",
+                pl: "Rozpoczęcie koszenia",
+                uk: "Початок скошування",
+                "zh-cn": "割草开始",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower.start`, common, "state", null, null, null);
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "Mowing stop",
+                de: "Mähstopp",
+                ru: "Остановка кошения",
+                pt: "Parada de corte de grama",
+                nl: "Maaistop",
+                fr: "Arrêt de la tonte",
+                it: "Arresto falciatura",
+                es: "Parada de corte",
+                pl: "Zatrzymanie koszenia",
+                uk: "Зупинка скошування",
+                "zh-cn": "割草机停止",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower.stop`, common, "state", null, null, null);
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "Mowing pause",
+                de: "Mähpause",
+                ru: "Пауза в процессе кошения",
+                pt: "Pausa para cortar a grama",
+                nl: "Maaipauze",
+                fr: "Pause tonte",
+                it: "Pausa di falciatura",
+                es: "Pausa para cortar el césped",
+                pl: "Przerwa w koszeniu",
+                uk: "Пауза під час скошування",
+                "zh-cn": "割草暂停",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower.pause`, common, "state", null, null, null);
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "Start find charger",
+                de: "Ladestation suchen",
+                ru: "Начать поиск зарядного устройства",
+                pt: "Comece a procurar o carregador",
+                nl: "Begin met het zoeken naar een oplader.",
+                fr: "Trouver un chargeur",
+                it: "Inizia a cercare il caricabatterie",
+                es: "Comience a buscar el cargador",
+                pl: "Rozpocznij wyszukiwanie ładowarki",
+                uk: "Початок пошуку зарядного пристрою",
+                "zh-cn": "开始寻找充电器",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower.pause`, common, "state", null, null, null);
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "Mower Status",
+                de: "Mäherstatus",
+                ru: "Состояние газонокосилки",
+                pt: "Status do cortador de grama",
+                nl: "Maaierstatus",
+                fr: "État de la tondeuse",
+                it: "Stato del tosaerba",
+                es: "Estado de la cortadora de césped",
+                pl: "Status kosiarki",
+                uk: "Стан косарки",
+                "zh-cn": "割草机状态",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower.start`, common, "state", null, null, null);
     }
     public async createRaw(id: string, name: string, model: string): Promise<any> {
         let common: CommonStates;
@@ -17,7 +346,7 @@ export class creatObjects implements Objects {
             desc: "Create by Adapter",
             icon: "img/mower.png",
         };
-        await this.createDataPoint(`${this.adapter.namespace}.${id}`, common, "device", null, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.${id}`, common, "device", null, null, null);
         common = {
             name: {
                 en: "Mower",
@@ -35,7 +364,25 @@ export class creatObjects implements Objects {
             desc: "Create by Adapter",
             icon: "img/mower.png",
         };
-        await this.createDataPoint(`${this.adapter.namespace}.${id}.mower`, common, "channel", null, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower`, common, "channel", null, null, null);
+        common = {
+            name: {
+                en: "Mower",
+                de: "Mäher",
+                ru: "Газонокосилка",
+                pt: "Cortador de grama",
+                nl: "Maaier",
+                fr: "Tondeuse",
+                it: "Tosaerba",
+                es: "Cortacésped",
+                pl: "Kosiarka",
+                uk: "Косарка",
+                "zh-cn": "割草机",
+            },
+            desc: "Create by Adapter",
+            icon: "img/mower.png",
+        };
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower_testing`, common, "channel", null, null, null);
         common = {
             name: {
                 en: "Mower all raw data",
@@ -53,14 +400,7 @@ export class creatObjects implements Objects {
             desc: "Create by Adapter",
             icon: "img/raw.png",
         };
-        await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_all_raw`,
-            common,
-            "channel",
-            null,
-            null,
-            null,
-        );
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower_all_raw`, common, "channel", null, null, null);
         if (model == "V") {
             common = {
                 name: {
@@ -80,7 +420,7 @@ export class creatObjects implements Objects {
                 icon: "img/schedule.png",
             };
             await this.createDataPoint(
-                `${this.adapter.namespace}.${id}.mower_all_raw.mower_schedule`,
+                `${this.iob.namespace}.${id}.mower_all_raw.mower_schedule`,
                 common,
                 "channel",
                 null,
@@ -106,7 +446,7 @@ export class creatObjects implements Objects {
             icon: "img/map.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_all_raw.mower_map_info`,
+            `${this.iob.namespace}.${id}.mower_all_raw.mower_map_info`,
             common,
             "channel",
             null,
@@ -131,7 +471,7 @@ export class creatObjects implements Objects {
             icon: "img/map.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_all_raw.mower_head_map_info`,
+            `${this.iob.namespace}.${id}.mower_all_raw.mower_head_map_info`,
             common,
             "channel",
             null,
@@ -156,7 +496,7 @@ export class creatObjects implements Objects {
             icon: "img/map.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_all_raw.mower_backup_map_info`,
+            `${this.iob.namespace}.${id}.mower_all_raw.mower_backup_map_info`,
             common,
             "channel",
             null,
@@ -181,7 +521,7 @@ export class creatObjects implements Objects {
             icon: "img/work.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_all_raw.mower_work_record`,
+            `${this.iob.namespace}.${id}.mower_all_raw.mower_work_record`,
             common,
             "channel",
             null,
@@ -208,7 +548,14 @@ export class creatObjects implements Objects {
             read: false,
             write: true,
         };
-        await this.createDataPoint(`${this.adapter.namespace}.${id}.mower.update`, common, "state", null, null, null);
+        await this.createDataPoint(
+            `${this.iob.namespace}.${id}.mower_testing.update`,
+            common,
+            "state",
+            null,
+            null,
+            null,
+        );
         common = {
             type: "boolean",
             role: "button",
@@ -230,7 +577,7 @@ export class creatObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower.all_properties`,
+            `${this.iob.namespace}.${id}.mower_testing.all_properties`,
             common,
             "state",
             null,
@@ -258,7 +605,7 @@ export class creatObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower.getRegionId`,
+            `${this.iob.namespace}.${id}.mower_testing.getRegionId`,
             common,
             "state",
             null,
@@ -286,7 +633,7 @@ export class creatObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower.update_all`,
+            `${this.iob.namespace}.${id}.mower_testing.update_all`,
             common,
             "state",
             null,
@@ -314,10 +661,39 @@ export class creatObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower.update_raw`,
+            `${this.iob.namespace}.${id}.mower_testing.update_raw`,
             common,
             "state",
             null,
+            null,
+            null,
+        );
+        common = {
+            type: "string",
+            role: "state",
+            name: {
+                en: "Get Request",
+                de: "Anfrage abrufen",
+                ru: "Получить запрос",
+                pt: "Solicitação de recebimento",
+                nl: "Verzoek ophalen",
+                fr: "Demande de récupération",
+                it: "Ottieni richiesta",
+                es: "Obtener solicitud",
+                pl: "Pobierz żądanie",
+                uk: "Отримати запит",
+                "zh-cn": "获取请求",
+            },
+            desc: "Create by Adapter",
+            read: true,
+            write: true,
+            def: "",
+        };
+        await this.createDataPoint(
+            `${this.iob.namespace}.${id}.mower_testing.getOwnRequest`,
+            common,
+            "state",
+            "",
             null,
             null,
         );
@@ -339,7 +715,7 @@ export class creatObjects implements Objects {
             icon: "img/raw.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_all_raw.mower_raw`,
+            `${this.iob.namespace}.${id}.mower_all_raw.mower_raw`,
             common,
             "channel",
             null,
@@ -364,7 +740,50 @@ export class creatObjects implements Objects {
             icon: "img/raw.png",
         };
         await this.createDataPoint(
-            `${this.adapter.namespace}.${id}.mower_all_raw.mower_raw_info`,
+            `${this.iob.namespace}.${id}.mower_all_raw.mower_raw_info`,
+            common,
+            "channel",
+            null,
+            null,
+            null,
+        );
+        common = {
+            name: {
+                en: "Mower properties",
+                de: "Eigenschaften des Rasenmähers",
+                ru: "Свойства газонокосилки",
+                pt: "Propriedades do cortador de grama",
+                nl: "Eigenschappen van de maaier",
+                fr: "Propriétés de la tondeuse",
+                it: "Proprietà del tosaerba",
+                es: "Propiedades de cortacésped",
+                pl: "Właściwości kosiarki",
+                uk: "Властивості косарки",
+                "zh-cn": "割草机特性",
+            },
+            desc: "Create by Adapter",
+            icon: "img/properties.png",
+        };
+        await this.createDataPoint(`${this.iob.namespace}.${id}.mower_properties`, common, "channel", null, null, null);
+        common = {
+            name: {
+                en: "Mower info raw data",
+                de: "Rohdaten zu Rasenmäherinformationen",
+                ru: "Исходные данные о газонокосилке",
+                pt: "Dados brutos de informações do cortador de grama",
+                nl: "Grasmaaierinfo ruwe data",
+                fr: "données brutes des informations sur la tondeuse",
+                it: "Dati grezzi relativi alle informazioni sul tosaerba",
+                es: "Datos brutos de información de la cortadora de césped",
+                pl: "Surowe dane dotyczące kosiarki",
+                uk: "Інформація про косарку, необроблені дані",
+                "zh-cn": "割草机信息原始数据",
+            },
+            desc: "Create by Adapter",
+            icon: "img/raw.png",
+        };
+        await this.createDataPoint(
+            `${this.iob.namespace}.${id}.mower_all_raw.mower_raw_info_sn`,
             common,
             "channel",
             null,
@@ -391,7 +810,7 @@ export class creatObjects implements Objects {
             desc: "Create by Adapter",
             icon: "img/mqtt.png",
         };
-        await this.createDataPoint(`${this.adapter.namespace}.mqtt`, common, "channel", null, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.mqtt`, common, "channel", null, null, null);
         common = {
             type: "boolean",
             role: "switch",
@@ -413,7 +832,7 @@ export class creatObjects implements Objects {
             write: false,
             def: false,
         };
-        await this.createDataPoint(`${this.adapter.namespace}.mqtt.v_connection`, common, "state", false, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.mqtt.v_connection`, common, "state", false, null, null);
         common = {
             type: "string",
             role: "json",
@@ -435,7 +854,7 @@ export class creatObjects implements Objects {
             write: false,
             def: JSON.stringify({}),
         };
-        await this.createDataPoint(`${this.adapter.namespace}.mqtt.v_access_data`, common, "state", false, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.mqtt.v_access_data`, common, "state", null, null, null);
         common = {
             type: "number",
             role: "value.time",
@@ -457,7 +876,7 @@ export class creatObjects implements Objects {
             write: false,
             def: 0,
         };
-        await this.createDataPoint(`${this.adapter.namespace}.mqtt.v_last_update`, common, "state", 0, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.mqtt.v_last_update`, common, "state", 0, null, null);
         common = {
             type: "boolean",
             role: "switch",
@@ -479,7 +898,7 @@ export class creatObjects implements Objects {
             write: false,
             def: false,
         };
-        await this.createDataPoint(`${this.adapter.namespace}.mqtt.x_connection`, common, "state", false, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.mqtt.x_connection`, common, "state", false, null, null);
         common = {
             type: "string",
             role: "json",
@@ -501,7 +920,7 @@ export class creatObjects implements Objects {
             write: false,
             def: JSON.stringify({}),
         };
-        await this.createDataPoint(`${this.adapter.namespace}.mqtt.x_access_data`, common, "state", false, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.mqtt.x_access_data`, common, "state", null, null, null);
         common = {
             type: "number",
             role: "value.time",
@@ -523,7 +942,7 @@ export class creatObjects implements Objects {
             write: false,
             def: 0,
         };
-        await this.createDataPoint(`${this.adapter.namespace}.mqtt.x_last_update`, common, "state", 0, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.mqtt.x_last_update`, common, "state", 0, null, null);
     }
     public async createAuth(): Promise<any> {
         let common: CommonStates;
@@ -544,7 +963,7 @@ export class creatObjects implements Objects {
             desc: "Create by Adapter",
             icon: "img/auth.png",
         };
-        await this.createDataPoint(`${this.adapter.namespace}.auth`, common, "channel", null, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.auth`, common, "channel", null, null, null);
         common = {
             name: {
                 en: "Rate Limit",
@@ -562,7 +981,7 @@ export class creatObjects implements Objects {
             desc: "Create by Adapter",
             icon: "img/rate.png",
         };
-        await this.createDataPoint(`${this.adapter.namespace}.rateLimit`, common, "channel", null, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.rateLimit`, common, "channel", null, null, null);
         common = {
             type: "string",
             role: "json",
@@ -584,7 +1003,7 @@ export class creatObjects implements Objects {
             write: true,
             def: JSON.stringify({}),
         };
-        await this.createDataPoint(`${this.adapter.namespace}.auth.session`, common, "state", null, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.auth.session`, common, "state", null, null, null);
         common = {
             type: "string",
             role: "json",
@@ -611,7 +1030,7 @@ export class creatObjects implements Objects {
                 day: "",
             }),
         };
-        await this.createDataPoint(`${this.adapter.namespace}.rateLimit.restart`, common, "state", null, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.rateLimit.restart`, common, "state", null, null, null);
     }
     /**
      * @param ident Object
@@ -631,16 +1050,16 @@ export class creatObjects implements Objects {
     ): Promise<void> {
         try {
             const nativvalue = !native ? { native: {} } : { native: native };
-            const obj: any = await this.adapter.getObjectAsync(ident);
+            const obj: any = await this.iob.getObjectAsync(ident);
             if (!obj) {
-                await this.adapter
+                await this.iob
                     .setObjectNotExistsAsync(ident, {
                         type: types,
                         common: common,
                         ...nativvalue,
                     })
                     .catch(error => {
-                        this.adapter.log.warn(`createDataPoint: ${error}`);
+                        this.iob.log.warn(`createDataPoint: ${error}`);
                     });
             } else {
                 let ischange = false;
@@ -649,7 +1068,7 @@ export class creatObjects implements Objects {
                     if (obj.common && common && common.states == null && obj.common.states != null) {
                         countStates = 1;
                     }
-                    this.adapter.log.debug(`countStates: ${countStates}`);
+                    this.iob.log.debug(`countStates: ${countStates}`);
                     if (Object.keys(common).length > Object.keys(obj.common || {}).length - countStates) {
                         ischange = true;
                     } else {
@@ -664,15 +1083,15 @@ export class creatObjects implements Objects {
                         ischange = true;
                     }
                     if (ischange) {
-                        this.adapter.log.debug(`INFORMATION - Extend common: ${this.adapter.namespace}.${ident}`);
-                        await this.adapter.extendObject(ident, {
+                        this.iob.log.debug(`INFORMATION - Extend common: ${this.iob.namespace}.${ident}`);
+                        await this.iob.extendObject(ident, {
                             type: types,
                             common: common,
                             ...nativvalue,
                         });
                     }
                     if (value != null) {
-                        await this.adapter.setState(ident, value, true);
+                        await this.iob.setState(ident, value, true);
                     }
                     return;
                 }
@@ -711,21 +1130,21 @@ export class creatObjects implements Objects {
                     }
                 }
                 if (ischange) {
-                    this.adapter.log.debug(`INFORMATION - Change common: ${this.adapter.namespace}.${ident}`);
+                    this.iob.log.debug(`INFORMATION - Change common: ${this.iob.namespace}.${ident}`);
                     delete obj.common;
                     obj.common = common;
                     obj.type = types;
-                    await this.adapter.setObject(ident, obj);
+                    await this.iob.setObject(ident, obj);
                 }
             }
             if (value != null) {
-                await this.adapter.setState(ident, value, true);
+                await this.iob.setState(ident, value, true);
             }
         } catch (error: unknown) {
             if (typeof error === "string") {
-                this.adapter.log.error(`createDataPoint: ${error}`);
+                this.iob.log.error(`createDataPoint: ${error}`);
             } else if (error instanceof Error) {
-                this.adapter.log.error(`createDataPoint: ${error.name}: ${error.message}`);
+                this.iob.log.error(`createDataPoint: ${error.name}: ${error.message}`);
             }
         }
     }

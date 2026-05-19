@@ -78,7 +78,9 @@
     "native": {
         "username": "",
         "password": "",
-        "region": ""
+        "region": "",
+        "interval": 60,
+        "interval_raw": 1
     },
     "encryptedNative": ["password"],
     "protectedNative": ["password"],

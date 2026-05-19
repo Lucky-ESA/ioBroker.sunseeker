@@ -7,6 +7,8 @@ declare global {
             username: string;
             password: string;
             region: string;
+            interval: number;
+            interval_raw: number;
         }
     }
 }

@@ -2,6 +2,8 @@ export interface Objects {
     createAuth(): Promise<any>;
     createMqtt(): Promise<any>;
     createRaw(id: string, name: string, model: string): Promise<any>;
+    createMowerObjects(id: string, model: string): Promise<any>;
+    createMowerObject(message: any): Promise<any>;
 }
 
 export type CommonStates = {
@@ -19,7 +21,8 @@ export type CommonStates = {
               uk: string;
               "zh-cn": string;
           }
-        | string;
+        | string
+        | number;
     desc: string;
     statusStates?: {
         onlineId: string;

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/types/statesV.ts"],
+  "sourcesContent": ["export interface States {\n    createUpdate(id: string, data: any): Promise<any>;\n    addDevice(id: string, model: string): void;\n    setProperties(message: any): Promise<any>;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

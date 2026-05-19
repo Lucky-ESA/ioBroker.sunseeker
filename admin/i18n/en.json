@@ -2,5 +2,7 @@
     "sunseeker adapter settings": "Adapter settings for sunseeker",
     "Username": "Username",
     "Password": "Password",
-    "Region": "Region"
+    "Region": "Region",
+    "Interval": "Interval for updating device data (in minutes)",
+    "Interval_raw": "Interval for updating raw device data (in hours)"
 }

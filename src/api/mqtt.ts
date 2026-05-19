@@ -5,8 +5,8 @@ import type { MQTT } from "../types/mqtt";
 
 export class mqttConnection extends EventEmitter implements MQTT {
     private mqttClient: any;
-    private readonly iob: ioBroker.Adapter;
     private type: string;
+    private iob: ioBroker.Adapter;
     /**
      * MQTT Connection
      *
@@ -14,8 +14,8 @@ export class mqttConnection extends EventEmitter implements MQTT {
      */
     constructor(iob: ioBroker.Adapter) {
         super();
-        this.iob = iob;
         this.type = "";
+        this.iob = iob;
     }
 
     public start(user_id: number, password: string, type: string, appId: string): void {
@@ -26,19 +26,19 @@ export class mqttConnection extends EventEmitter implements MQTT {
         let host = "";
         let port = 1884;
         if (this.iob.config.region == "EU") {
-            if (type == "v") {
+            if (type == "V") {
                 host = "app.mqttv1-eu.sk-robot.com";
             } else {
                 host = "wfsmqtt-specific.sk-robot.com";
             }
         } else {
-            if (type == "v") {
+            if (type == "V") {
                 host = "app.mqttv1-us.sk-robot.com";
             } else {
                 host = "wfsmqtt-specific-us.sk-robot.com";
             }
         }
-        if (type == "v") {
+        if (type == "V") {
             port = 32884;
         }
         this.mqttClient = mqtt.connect(`mqtts://${host}`, {
@@ -60,10 +60,11 @@ export class mqttConnection extends EventEmitter implements MQTT {
             this.iob.log.info("MQTT connected");
             void this.setStatesConnection(true);
             let ep = "wirelessdevice";
-            if (type == "v") {
+            if (type == "V") {
                 ep = "wirelessmower";
             }
             this.mqttClient && this.mqttClient.subscribe(`/${ep}/${user_id}/get`, { qos: 0 });
+            this.emit("status", true);
         });
         this.mqttClient.on("message", (topic: string, message: { toString: () => string }) => {
             this.iob.log.debug(`MQTT message: ${topic} ${message.toString()}`);
@@ -79,18 +80,22 @@ export class mqttConnection extends EventEmitter implements MQTT {
         this.mqttClient.on("error", (error: string) => {
             this.iob.log.error(`MQTT error: ${error}`);
             void this.setStatesConnection(false);
+            this.emit("status", false);
         });
         this.mqttClient.on("close", () => {
             this.iob.log.info("MQTT closed");
             void this.setStatesConnection(false);
+            this.emit("status", false);
         });
         this.mqttClient.on("offline", () => {
             this.iob.log.info("MQTT offline");
             void this.setStatesConnection(false);
+            this.emit("status", false);
         });
         this.mqttClient.on("reconnect", () => {
             this.iob.log.info("MQTT reconnect");
             void this.setStatesConnection(true);
+            this.emit("status", true);
         });
     }
 
