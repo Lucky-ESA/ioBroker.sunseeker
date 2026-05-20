@@ -7,22 +7,19 @@ export interface Objects {
 }
 
 export type CommonStates = {
-    name:
-        | {
-              en: string;
-              de: string;
-              ru: string;
-              pt: string;
-              nl: string;
-              fr: string;
-              it: string;
-              es: string;
-              pl: string;
-              uk: string;
-              "zh-cn": string;
-          }
-        | string
-        | number;
+    name: {
+        en: string;
+        de: string;
+        ru: string;
+        pt: string;
+        nl: string;
+        fr: string;
+        it: string;
+        es: string;
+        pl: string;
+        uk: string;
+        "zh-cn": string;
+    };
     desc: string;
     statusStates?: {
         onlineId: string;

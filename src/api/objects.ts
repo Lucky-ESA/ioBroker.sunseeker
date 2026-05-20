@@ -50,6 +50,7 @@ export class createObjects implements Objects {
                 null,
             );
         }
+
         if (data.soc_temp != null) {
             common = {
                 type: "number",
@@ -82,6 +83,7 @@ export class createObjects implements Objects {
                 null,
             );
         }
+
         if (data.wifi_sig != null) {
             common = {
                 type: "number",
@@ -114,6 +116,7 @@ export class createObjects implements Objects {
                 null,
             );
         }
+
         if (data.net_4g_sig != null) {
             common = {
                 type: "number",
@@ -146,7 +149,7 @@ export class createObjects implements Objects {
                 null,
             );
         }
-        if (data.robot_pos != null) {
+        if (data.robot_pos != null && data.robot_pos.angle != null) {
             common = {
                 type: "number",
                 role: "value",
@@ -172,15 +175,67 @@ export class createObjects implements Objects {
                 `${this.iob.namespace}.${sn}.mower.robot_pos_angle`,
                 common,
                 "state",
-                data.robot_pos,
+                data.robot_pos.angle,
                 null,
                 null,
             );
+
+            common = {
+                type: "number",
+                role: "value",
+                name: {
+                    en: "Robot position x",
+                    de: "Roboterposition x",
+                    ru: "Положение робота x",
+                    pt: "Posição do robô x",
+                    nl: "Robotpositie x",
+                    fr: "Position du robot x",
+                    it: "Posizione del robot x",
+                    es: "Posición del robot x",
+                    pl: "Pozycja robota x",
+                    uk: "Позиція робота x",
+                    "zh-cn": "机器人位置 x",
+                },
+                desc: "Create by Adapter",
+                read: true,
+                write: false,
+                def: 0,
+            };
             await this.createDataPoint(
-                `${this.iob.namespace}.${sn}.mower.net_4g_sig`,
+                `${this.iob.namespace}.${sn}.mower.robot_pos_x`,
                 common,
                 "state",
-                data.net_4g_sig,
+                data.robot_pos.point[0],
+                null,
+                null,
+            );
+
+            common = {
+                type: "number",
+                role: "value",
+                name: {
+                    en: "Robot position y",
+                    de: "Roboterposition y",
+                    ru: "Положение робота по оси Y",
+                    pt: "Posição do robô y",
+                    nl: "Robotpositie y",
+                    fr: "Position du robot y",
+                    it: "Posizione del robot y",
+                    es: "Posición del robot y",
+                    pl: "Pozycja robota y",
+                    uk: "Положення робота y",
+                    "zh-cn": "机器人位置 y",
+                },
+                desc: "Create by Adapter",
+                read: true,
+                write: false,
+                def: 0,
+            };
+            await this.createDataPoint(
+                `${this.iob.namespace}.${sn}.mower.robot_pos_y`,
+                common,
+                "state",
+                data.robot_pos.point[1],
                 null,
                 null,
             );
@@ -233,6 +288,7 @@ export class createObjects implements Objects {
             },
         };
         await this.createDataPoint(`${this.iob.namespace}.${id}.mower.status`, common, "state", null, null, null);
+
         common = {
             type: "boolean",
             role: "button",
@@ -254,6 +310,7 @@ export class createObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(`${this.iob.namespace}.${id}.mower.start`, common, "state", null, null, null);
+
         common = {
             type: "boolean",
             role: "button",
@@ -275,6 +332,7 @@ export class createObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(`${this.iob.namespace}.${id}.mower.stop`, common, "state", null, null, null);
+
         common = {
             type: "boolean",
             role: "button",
@@ -296,6 +354,7 @@ export class createObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(`${this.iob.namespace}.${id}.mower.pause`, common, "state", null, null, null);
+
         common = {
             type: "boolean",
             role: "button",
@@ -317,6 +376,7 @@ export class createObjects implements Objects {
             write: true,
         };
         await this.createDataPoint(`${this.iob.namespace}.${id}.mower.pause`, common, "state", null, null, null);
+
         common = {
             type: "boolean",
             role: "button",
@@ -341,12 +401,13 @@ export class createObjects implements Objects {
     }
     public async createRaw(id: string, name: string, model: string): Promise<any> {
         let common: CommonStates;
-        common = {
+        const commons = {
             name: name,
             desc: "Create by Adapter",
             icon: "img/mower.png",
         };
-        await this.createDataPoint(`${this.iob.namespace}.${id}`, common, "device", null, null, null);
+        await this.createDataPoint(`${this.iob.namespace}.${id}`, commons, "device", null, null, null);
+
         common = {
             name: {
                 en: "Mower",
@@ -365,6 +426,7 @@ export class createObjects implements Objects {
             icon: "img/mower.png",
         };
         await this.createDataPoint(`${this.iob.namespace}.${id}.mower`, common, "channel", null, null, null);
+
         common = {
             name: {
                 en: "Mower",
@@ -383,6 +445,7 @@ export class createObjects implements Objects {
             icon: "img/mower.png",
         };
         await this.createDataPoint(`${this.iob.namespace}.${id}.mower_testing`, common, "channel", null, null, null);
+
         common = {
             name: {
                 en: "Mower all raw data",
@@ -401,6 +464,7 @@ export class createObjects implements Objects {
             icon: "img/raw.png",
         };
         await this.createDataPoint(`${this.iob.namespace}.${id}.mower_all_raw`, common, "channel", null, null, null);
+
         if (model == "V") {
             common = {
                 name: {
@@ -428,6 +492,7 @@ export class createObjects implements Objects {
                 null,
             );
         }
+
         common = {
             name: {
                 en: "Mower map info",
@@ -453,6 +518,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             name: {
                 en: "Mower head map info",
@@ -478,6 +544,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             name: {
                 en: "Mower map backup",
@@ -503,6 +570,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             name: {
                 en: "Device work record",
@@ -528,6 +596,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             type: "boolean",
             role: "button",
@@ -556,6 +625,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             type: "boolean",
             role: "button",
@@ -584,6 +654,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             type: "boolean",
             role: "button",
@@ -612,6 +683,65 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "Get Schedule Data",
+                de: "Termindaten abrufen",
+                ru: "Получить данные расписания",
+                pt: "Obtenha dados de agendamento",
+                nl: "Roostergegevens ophalen",
+                fr: "Obtenir les données de l'horaire",
+                it: "Ottieni i dati della pianificazione",
+                es: "Obtener datos de programación",
+                pl: "Pobierz dane harmonogramu",
+                uk: "Отримати дані розкладу",
+                "zh-cn": "获取日程数据",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(
+            `${this.iob.namespace}.${id}.mower_testing.getScheduleData`,
+            common,
+            "state",
+            null,
+            null,
+            null,
+        );
+
+        common = {
+            type: "boolean",
+            role: "button",
+            name: {
+                en: "Report property",
+                de: "Objekt melden",
+                ru: "Сообщить о нарушении права собственности",
+                pt: "Denunciar propriedade",
+                nl: "Rapporteer onroerend goed",
+                fr: "Signaler la propriété",
+                it: "Segnala proprietà",
+                es: "Denunciar propiedad",
+                pl: "Zgłoś nieruchomość",
+                uk: "Повідомити про властивість",
+                "zh-cn": "报告属性",
+            },
+            desc: "Create by Adapter",
+            read: false,
+            write: true,
+        };
+        await this.createDataPoint(
+            `${this.iob.namespace}.${id}.mower_testing.reportProperty`,
+            common,
+            "state",
+            null,
+            null,
+            null,
+        );
+
         common = {
             type: "boolean",
             role: "button",
@@ -640,6 +770,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             type: "boolean",
             role: "button",
@@ -668,6 +799,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             type: "string",
             role: "state",
@@ -697,6 +829,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             name: {
                 en: "Mower raw data",
@@ -722,6 +855,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             name: {
                 en: "Mower info raw data",
@@ -747,6 +881,7 @@ export class createObjects implements Objects {
             null,
             null,
         );
+
         common = {
             name: {
                 en: "Mower properties",
@@ -765,6 +900,7 @@ export class createObjects implements Objects {
             icon: "img/properties.png",
         };
         await this.createDataPoint(`${this.iob.namespace}.${id}.mower_properties`, common, "channel", null, null, null);
+
         common = {
             name: {
                 en: "Mower info raw data",
@@ -811,6 +947,7 @@ export class createObjects implements Objects {
             icon: "img/mqtt.png",
         };
         await this.createDataPoint(`${this.iob.namespace}.mqtt`, common, "channel", null, null, null);
+
         common = {
             type: "boolean",
             role: "switch",
@@ -833,6 +970,7 @@ export class createObjects implements Objects {
             def: false,
         };
         await this.createDataPoint(`${this.iob.namespace}.mqtt.v_connection`, common, "state", false, null, null);
+
         common = {
             type: "string",
             role: "json",
@@ -855,6 +993,7 @@ export class createObjects implements Objects {
             def: JSON.stringify({}),
         };
         await this.createDataPoint(`${this.iob.namespace}.mqtt.v_access_data`, common, "state", null, null, null);
+
         common = {
             type: "number",
             role: "value.time",
@@ -877,6 +1016,7 @@ export class createObjects implements Objects {
             def: 0,
         };
         await this.createDataPoint(`${this.iob.namespace}.mqtt.v_last_update`, common, "state", 0, null, null);
+
         common = {
             type: "boolean",
             role: "switch",
@@ -899,6 +1039,7 @@ export class createObjects implements Objects {
             def: false,
         };
         await this.createDataPoint(`${this.iob.namespace}.mqtt.x_connection`, common, "state", false, null, null);
+
         common = {
             type: "string",
             role: "json",
@@ -921,6 +1062,7 @@ export class createObjects implements Objects {
             def: JSON.stringify({}),
         };
         await this.createDataPoint(`${this.iob.namespace}.mqtt.x_access_data`, common, "state", null, null, null);
+
         common = {
             type: "number",
             role: "value.time",
@@ -964,6 +1106,7 @@ export class createObjects implements Objects {
             icon: "img/auth.png",
         };
         await this.createDataPoint(`${this.iob.namespace}.auth`, common, "channel", null, null, null);
+
         common = {
             name: {
                 en: "Rate Limit",
@@ -982,6 +1125,7 @@ export class createObjects implements Objects {
             icon: "img/rate.png",
         };
         await this.createDataPoint(`${this.iob.namespace}.rateLimit`, common, "channel", null, null, null);
+
         common = {
             type: "string",
             role: "json",
@@ -1004,6 +1148,7 @@ export class createObjects implements Objects {
             def: JSON.stringify({}),
         };
         await this.createDataPoint(`${this.iob.namespace}.auth.session`, common, "state", null, null, null);
+
         common = {
             type: "string",
             role: "json",
@@ -1032,6 +1177,7 @@ export class createObjects implements Objects {
         };
         await this.createDataPoint(`${this.iob.namespace}.rateLimit.restart`, common, "state", null, null, null);
     }
+
     /**
      * @param ident Object
      * @param common Common States
@@ -1116,7 +1262,7 @@ export class createObjects implements Objects {
                         for (const key in obj.native) {
                             if (nativvalue.native[key] == null) {
                                 ischange = true;
-                                delete obj.native;
+                                //delete obj.native;
                                 obj.native = native;
                                 break;
                             } else if (JSON.stringify(obj.native[key]) != JSON.stringify(nativvalue.native[key])) {
@@ -1131,7 +1277,7 @@ export class createObjects implements Objects {
                 }
                 if (ischange) {
                     this.iob.log.debug(`INFORMATION - Change common: ${this.iob.namespace}.${ident}`);
-                    delete obj.common;
+                    //delete obj.common;
                     obj.common = common;
                     obj.type = types;
                     await this.iob.setObject(ident, obj);

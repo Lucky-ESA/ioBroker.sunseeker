@@ -51,6 +51,11 @@ class createStatesX {
     if (data.net_4g_sig != null) {
       await this.iob.setState(`${sn}.mower.net_4g_sig`, { val: data.net_4g_sig, ack: true });
     }
+    if (data.robot_pos != null) {
+      await this.iob.setState(`${sn}.mower.robot_pos_angle`, { val: data.robot_pos.angle, ack: true });
+      await this.iob.setState(`${sn}.mower.robot_pos_x`, { val: data.robot_pos.point[0], ack: true });
+      await this.iob.setState(`${sn}.mower.robot_pos_y`, { val: data.robot_pos.point[1], ack: true });
+    }
   }
   async createUpdate(id, data) {
     if (typeof data === "object") {

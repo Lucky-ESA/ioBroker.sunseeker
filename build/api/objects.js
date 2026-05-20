@@ -167,7 +167,7 @@ class createObjects {
         null
       );
     }
-    if (data.robot_pos != null) {
+    if (data.robot_pos != null && data.robot_pos.angle != null) {
       common = {
         type: "number",
         role: "value",
@@ -193,15 +193,65 @@ class createObjects {
         `${this.iob.namespace}.${sn}.mower.robot_pos_angle`,
         common,
         "state",
-        data.robot_pos,
+        data.robot_pos.angle,
         null,
         null
       );
+      common = {
+        type: "number",
+        role: "value",
+        name: {
+          en: "Robot position x",
+          de: "Roboterposition x",
+          ru: "\u041F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u0435 \u0440\u043E\u0431\u043E\u0442\u0430 x",
+          pt: "Posi\xE7\xE3o do rob\xF4 x",
+          nl: "Robotpositie x",
+          fr: "Position du robot x",
+          it: "Posizione del robot x",
+          es: "Posici\xF3n del robot x",
+          pl: "Pozycja robota x",
+          uk: "\u041F\u043E\u0437\u0438\u0446\u0456\u044F \u0440\u043E\u0431\u043E\u0442\u0430 x",
+          "zh-cn": "\u673A\u5668\u4EBA\u4F4D\u7F6E x"
+        },
+        desc: "Create by Adapter",
+        read: true,
+        write: false,
+        def: 0
+      };
       await this.createDataPoint(
-        `${this.iob.namespace}.${sn}.mower.net_4g_sig`,
+        `${this.iob.namespace}.${sn}.mower.robot_pos_x`,
         common,
         "state",
-        data.net_4g_sig,
+        data.robot_pos.point[0],
+        null,
+        null
+      );
+      common = {
+        type: "number",
+        role: "value",
+        name: {
+          en: "Robot position y",
+          de: "Roboterposition y",
+          ru: "\u041F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u0435 \u0440\u043E\u0431\u043E\u0442\u0430 \u043F\u043E \u043E\u0441\u0438 Y",
+          pt: "Posi\xE7\xE3o do rob\xF4 y",
+          nl: "Robotpositie y",
+          fr: "Position du robot y",
+          it: "Posizione del robot y",
+          es: "Posici\xF3n del robot y",
+          pl: "Pozycja robota y",
+          uk: "\u041F\u043E\u043B\u043E\u0436\u0435\u043D\u043D\u044F \u0440\u043E\u0431\u043E\u0442\u0430 y",
+          "zh-cn": "\u673A\u5668\u4EBA\u4F4D\u7F6E y"
+        },
+        desc: "Create by Adapter",
+        read: true,
+        write: false,
+        def: 0
+      };
+      await this.createDataPoint(
+        `${this.iob.namespace}.${sn}.mower.robot_pos_y`,
+        common,
+        "state",
+        data.robot_pos.point[1],
         null,
         null
       );
@@ -362,12 +412,12 @@ class createObjects {
   }
   async createRaw(id, name, model) {
     let common;
-    common = {
+    const commons = {
       name,
       desc: "Create by Adapter",
       icon: "img/mower.png"
     };
-    await this.createDataPoint(`${this.iob.namespace}.${id}`, common, "device", null, null, null);
+    await this.createDataPoint(`${this.iob.namespace}.${id}`, commons, "device", null, null, null);
     common = {
       name: {
         en: "Mower",
@@ -627,6 +677,62 @@ class createObjects {
     };
     await this.createDataPoint(
       `${this.iob.namespace}.${id}.mower_testing.getRegionId`,
+      common,
+      "state",
+      null,
+      null,
+      null
+    );
+    common = {
+      type: "boolean",
+      role: "button",
+      name: {
+        en: "Get Schedule Data",
+        de: "Termindaten abrufen",
+        ru: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0434\u0430\u043D\u043D\u044B\u0435 \u0440\u0430\u0441\u043F\u0438\u0441\u0430\u043D\u0438\u044F",
+        pt: "Obtenha dados de agendamento",
+        nl: "Roostergegevens ophalen",
+        fr: "Obtenir les donn\xE9es de l'horaire",
+        it: "Ottieni i dati della pianificazione",
+        es: "Obtener datos de programaci\xF3n",
+        pl: "Pobierz dane harmonogramu",
+        uk: "\u041E\u0442\u0440\u0438\u043C\u0430\u0442\u0438 \u0434\u0430\u043D\u0456 \u0440\u043E\u0437\u043A\u043B\u0430\u0434\u0443",
+        "zh-cn": "\u83B7\u53D6\u65E5\u7A0B\u6570\u636E"
+      },
+      desc: "Create by Adapter",
+      read: false,
+      write: true
+    };
+    await this.createDataPoint(
+      `${this.iob.namespace}.${id}.mower_testing.getScheduleData`,
+      common,
+      "state",
+      null,
+      null,
+      null
+    );
+    common = {
+      type: "boolean",
+      role: "button",
+      name: {
+        en: "Report property",
+        de: "Objekt melden",
+        ru: "\u0421\u043E\u043E\u0431\u0449\u0438\u0442\u044C \u043E \u043D\u0430\u0440\u0443\u0448\u0435\u043D\u0438\u0438 \u043F\u0440\u0430\u0432\u0430 \u0441\u043E\u0431\u0441\u0442\u0432\u0435\u043D\u043D\u043E\u0441\u0442\u0438",
+        pt: "Denunciar propriedade",
+        nl: "Rapporteer onroerend goed",
+        fr: "Signaler la propri\xE9t\xE9",
+        it: "Segnala propriet\xE0",
+        es: "Denunciar propiedad",
+        pl: "Zg\u0142o\u015B nieruchomo\u015B\u0107",
+        uk: "\u041F\u043E\u0432\u0456\u0434\u043E\u043C\u0438\u0442\u0438 \u043F\u0440\u043E \u0432\u043B\u0430\u0441\u0442\u0438\u0432\u0456\u0441\u0442\u044C",
+        "zh-cn": "\u62A5\u544A\u5C5E\u6027"
+      },
+      desc: "Create by Adapter",
+      read: false,
+      write: true
+    };
+    await this.createDataPoint(
+      `${this.iob.namespace}.${id}.mower_testing.reportProperty`,
       common,
       "state",
       null,
@@ -1128,7 +1234,6 @@ class createObjects {
             for (const key in obj.native) {
               if (nativvalue.native[key] == null) {
                 ischange = true;
-                delete obj.native;
                 obj.native = native;
                 break;
               } else if (JSON.stringify(obj.native[key]) != JSON.stringify(nativvalue.native[key])) {
@@ -1143,7 +1248,6 @@ class createObjects {
         }
         if (ischange) {
           this.iob.log.debug(`INFORMATION - Change common: ${this.iob.namespace}.${ident}`);
-          delete obj.common;
           obj.common = common;
           obj.type = types;
           await this.iob.setObject(ident, obj);

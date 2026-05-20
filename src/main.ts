@@ -293,7 +293,7 @@ class Sunseeker extends utils.Adapter {
         this.deviceInterval && this.clearInterval(this.deviceInterval);
         if (this.session) {
             this.deviceInterval = this.setInterval(
-                () => {
+                async () => {
                     for (const id of this.devices.keys()) {
                         void this.getStartDataMqtt(
                             this.devices.get(id)?.deviceSn,
@@ -301,6 +301,26 @@ class Sunseeker extends utils.Adapter {
                             "getDevAllProperty",
                             "all",
                         );
+                        if (this.devices.get(id)?.model == "X") {
+                            void this.setProperties(
+                                this.devices.get(id)?.deviceSn,
+                                this.devices.get(id)?.model,
+                                "getTimeTactics",
+                                "time_custom",
+                                "get_property",
+                            );
+                        } else {
+                            const resp = await this.getDeviceData(
+                                `${this.url}/app_wirelessv1_mower/wirelessv1/device-schedule/${id}`,
+                                id,
+                                "getDeviceMap",
+                                null,
+                                "mower map info",
+                            );
+                            if (resp) {
+                                this.log.debug(JSON.stringify(resp));
+                            }
+                        }
                     }
                 },
                 this.config.interval * 60 * 1000,
@@ -542,7 +562,13 @@ class Sunseeker extends utils.Adapter {
         }
         return true;
     }
-    private async getDeviceData(url: string, id: string, log: string, path: string, create: string): Promise<any> {
+    private async getDeviceData(
+        url: string,
+        id: string,
+        log: string,
+        path: string | null,
+        create: string,
+    ): Promise<any> {
         const headers = {
             headers: this.rHeader,
         };
@@ -551,8 +577,10 @@ class Sunseeker extends utils.Adapter {
         if (resp && resp.data && resp.data.data) {
             this.log.debug(`${log}: ${JSON.stringify(resp.data)}`);
             this.log.info(`Create ${create} for device ${id}`);
-            await this.json2iob.parse(`${id}.${path}`, resp.data.data, { forceIndex: true });
-            return resp.data.data;
+            if (path != null) {
+                await this.json2iob.parse(`${id}.${path}`, resp.data.data, { forceIndex: true });
+            }
+            return resp.data;
         } else if (resp && resp && resp.code) {
             this.log.error(`${log} Invalid: ${JSON.stringify(resp)}`);
         } else if (typeof resp === "object") {
@@ -645,6 +673,57 @@ class Sunseeker extends utils.Adapter {
         return true;
     }
 
+    private async setProperties(
+        deviceSN: string | undefined,
+        model: string | undefined,
+        id: string,
+        key: string,
+        methode: string,
+    ): Promise<boolean> {
+        if (deviceSN == undefined || model == undefined) {
+            this.log.error(`Param deviceSN or model is undefined!!!`);
+            return false;
+        }
+        const data = {
+            data: {
+                appId: this.session?.user_id,
+                deviceSn: deviceSN,
+                id: id,
+                key: key,
+                method: methode,
+            },
+        };
+        let path = helper.CMDURL_X;
+        let cmd = "set_property";
+        if (model == "V") {
+            path = helper.CMDURL_V;
+            cmd = "setProperty";
+        }
+        const headers = {
+            headers: this.rHeader,
+        };
+        const url = `${this.url}${path}${cmd}`;
+        const resp: any = await this.req.post(url, headers, data);
+        if (resp && resp.data && resp.data.data) {
+            this.log.debug(`setProperties: ${JSON.stringify(resp.data)}`);
+        } else if (resp && resp && resp.code) {
+            this.log.error(`getStartDataMqtt Invalid: ${JSON.stringify(resp)}`);
+        } else if (typeof resp === "object") {
+            if (resp.data) {
+                if (resp.data.code == 0 && resp.data.ok) {
+                    this.log.info(`setProperties Request OK`);
+                } else {
+                    this.log.error(`setProperties Error Data: ${JSON.stringify(resp.data)}`);
+                }
+            } else {
+                this.log.error(`setProperties Error: ${JSON.stringify(resp)}`);
+            }
+        } else {
+            this.log.error(`setProperties Error String: ${resp}`);
+        }
+        return true;
+    }
+
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      *
@@ -710,16 +789,25 @@ class Sunseeker extends utils.Adapter {
                         break;
                     case "all_properties":
                         void this.getStartDataMqtt(
-                            this.devices.get(deviceSn)?.deviceSn,
+                            deviceSn,
                             this.devices.get(deviceSn)?.model,
                             "getDevAllProperty",
                             "all",
                         );
                         void this.setState(id, { ack: true });
                         break;
+                    case "reportProperty":
+                        void this.getStartDataMqtt(
+                            deviceSn,
+                            this.devices.get(deviceSn)?.model,
+                            "report_property",
+                            "all",
+                        );
+                        void this.setState(id, { ack: true });
+                        break;
                     case "getRegionId":
                         void this.getStartDataMqtt(
-                            this.devices.get(deviceSn)?.deviceSn,
+                            deviceSn,
                             this.devices.get(deviceSn)?.model,
                             "getSelectRegionID",
                             "select_region_id",
@@ -731,6 +819,16 @@ class Sunseeker extends utils.Adapter {
                             void this.getTesting(state.val);
                             void this.setState(id, { ack: true });
                         }
+                        break;
+                    case "getScheduleData":
+                        void this.setProperties(
+                            deviceSn,
+                            this.devices.get(deviceSn)?.model,
+                            "getTimeTactics",
+                            "time_custom",
+                            "get_property",
+                        );
+                        void this.setState(id, { ack: true });
                         break;
                     default:
                         this.log.warn(`Cannot found command ${command}`);
